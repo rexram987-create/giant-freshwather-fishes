@@ -4,15 +4,15 @@ import { Search, BookOpen, MapPin, Activity, History, User, Calendar, Scale, Wav
 const FishApp = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // רשימת 24 המינים - מחקר מעמיק ומורחב
+  // רשימת 27 המינים - מחקר מעמיק, מורחב ומסודר אלפביתית
   const fishData = useMemo(() => {
     const data = [
       {
-        id: 8,
+        id: 1,
         name: `אליגטור גאר`,
         scientificName: `Atractosteus spatula`,
         image: `https://i.postimg.cc/Wt538744/1770700430718.png`,
-        etymology: `השם "אליגטור" ניתן לו בשל דמיון מבנה הלסתות והשיניים לאלו של התנין האמריקאי. המילה "Gar" מקורה באנגלית עתיקה ומשמעותה "חנית", תיאור מדויק לגופו המוארך. השם המדעי spatula מתייחס לחרטום הרחב דמוי המרית, בעוד ששם הסוג Atractosteus פירושו "עצם דמוית פלך".`,
+        etymology: `השם "אליגטור" ניתן לו בשל דמיון מבנה הלסתות והשיניים לאלו של התנין האמריקאי. המילה "Gar" מקורה באנגלית עתיקה ומשמעותה "חנית". השם המדעי spatula מתייחס לחרטום הרחב דמוי המרית, בעוד ששם הסוג Atractosteus פירושו "עצם דמוית פלך".`,
         childhood: `הדגיגים הצעירים בוקעים מביצים רעילות (כהגנה מפני טורפים) ומתאפיינים בכתם דביק ייחודי בראשם המאפשר להם להיאחז בצמחייה תת-מימית עד לספיגת שק החלמון. שלב ה"ילדות" שלהם מהיר להפליא; הם מסוגלים לגדול בסנטימטרים בכל יום, כשהם טורפים זחלי חרקים עוד לפני שהגיעו לאורך של 5 סנטימטרים.`,
         behavior: `ה"אידאולוגיה" ההישרדותית שלו מבוססת על מארב פסיבי ושמירה על אנרגיה. הוא מסוגל לצוף ללא תנועה במשך שעות, מדמה בולי עץ הנסחפים בזרם. תכונה זו, בשילוב עם היכולת לנשום אוויר אטמוספרי בעזרת שלפוחית שחייה המקושרת לוושט, מאפשרת לו לשלוט במים רדודים ודלי חמצן שבהם טורפים אחרים אינם יכולים לתפקד.`,
         achievements: `זהו שריד פרהיסטורי חי ששרד מעל 100 מיליון שנה. הקשקשים הגנואידיים שלו קשים מספיק כדי להדוף חיצים ואף כדורי רובה קלים בעבר. הוא מהווה את חוליית הקישור החיה בין דגי הגרם הפרימיטיביים לדגים המודרניים, והוא הדג הגדול ביותר במערכת הנהרות של צפון אמריקה.`,
@@ -25,7 +25,7 @@ const FishApp = () => {
         reproduction: `הטלה במים רדודים בעונה הגשומה.`
       },
       {
-        id: 7,
+        id: 2,
         name: `אמנון בס פרפרי`,
         scientificName: `Cichla ocellaris`,
         image: `https://i.postimg.cc/B6m8HQHN/1770654212629.png`,
@@ -42,7 +42,7 @@ const FishApp = () => {
         reproduction: `הטלה על משטחי סלע עם הגנה הורית משותפת.`
       },
       {
-        id: 1,
+        id: 3,
         name: `אראפאימה ענקית`,
         scientificName: `Arapaima Gigas`,
         image: `https://i.postimg.cc/gJgw8k8g/1770654217606.png`,
@@ -59,7 +59,7 @@ const FishApp = () => {
         reproduction: `בניית קינים בחול; הזכר שומר על הביצים והצאצאים בהגנה אקטיבית.`
       },
       {
-        id: 20,
+        id: 4,
         name: `ארוואנה אוסטרלית`,
         scientificName: `Scleropages jardinii`,
         image: `https://i.postimg.cc/8k9YSQVp/1770738265678.png`,
@@ -76,7 +76,7 @@ const FishApp = () => {
         reproduction: `דגירת פה (Mouthbrooding) אימהית ייחודית.`
       },
       {
-        id: 3,
+        id: 5,
         name: `ארוואנה כסופה`,
         scientificName: `Osteoglossum bicirrhosum`,
         image: `https://i.postimg.cc/FRTf3s3P/1770654221602.png`,
@@ -93,7 +93,7 @@ const FishApp = () => {
         reproduction: `דגירת פה (Mouthbrooding) ע"י הזכר.`
       },
       {
-        id: 14,
+        id: 6,
         name: `ארוואנה שחורה`,
         scientificName: `Osteoglossum ferreirai`,
         image: `https://i.postimg.cc/Wt53874D/1770700464664.png`,
@@ -110,7 +110,7 @@ const FishApp = () => {
         reproduction: `דגירת פה (Mouthbrooding) ע"י הזכר.`
       },
       {
-        id: 18,
+        id: 7,
         name: `ברמונדי`,
         scientificName: `Lates calcarifer`,
         image: `https://i.postimg.cc/qBSFTVdf/1770738120438.png`,
@@ -127,14 +127,14 @@ const FishApp = () => {
         reproduction: `הרמפרודיט סדרתי (זכר הופך לנקבה לאחר הגעה לגודל מסוים).`
       },
       {
-        id: 15,
+        id: 8,
         name: `גאר ארוך-אף`,
         scientificName: `Lepisosteus osseus`,
         image: `https://i.postimg.cc/Thtw0cP5/1770700470140.png`,
         etymology: `השם מתאר את החוטם הארוך והדק המהווה כשליש מאורך גופו. המילה osseus בלטינית פירושה "עצם", המתייחס לשלד הגרמי והקשיח ולמבנה הקשקשים המיוחד המזכיר שריון עתיק.`,
         childhood: `הדגיגים הצעירים בוקעים עם דיסקית הצמדה זמנית בחרטומם, המאפשרת להם להיאחז בצמחים עד שהם מפתחים יכולת שחייה. שלב ה"ילדות" שלהם עובר בשחייה סמוך לפני השטח, שם הם דומים להפליא לענפים קטנים הנסחפים בזרם.`,
         behavior: `ה"אידאולוגיה" שלו היא של מארב חרישי. הוא שוחה בתנועות כמעט בלתי מורגשות, מדמה חפץ חסר חיים. כשהוא מגיע לטווח פגיעה, הוא מבצע תנועת ראש צידית חזקה ומהירה כברק האוחזת בטרף בעזרת מאות שיניים דקות וחדות.`,
-        achievements: `זהו שריד חי מעידן הדינוזאורים ששרד ללא שינוי מהותי. הישגו העיקרי הוא מערכת קשקשים עתיקה המחוברים זה לזה במבנה של "צירים", המעניקים לו הגנה מלאה מבלי להקריב את הגמישות.`,
+        achievements: `זהו שריד חי מעידן הדינוזאורים ששרד ללא שינוי מהותי. הישגו העיקרי הוא מערכת קשקשים עתיקה המחוברים זה לזה במבנה של "צירים", המעניקו לו הגנה מלאה מבלי להקריב את הגמישות.`,
         discoveryCircumstances: `תואר ע"י לינאוס במאה ה-18 (1758). הגילוי הדגיש את המבנה האנטומי המיוחד של קשקשי הגנואיד שלו ושלד העצם החזק, המעידים על שושלת עתיקה ששרדה שינויים סביבתיים כביריים.`,
         size: `1.8 מטר`, weight: `25 קילוגרם`, lifespan: `15-20+ שנים`,
         origin: `נהרות ואגמים בצפון ומרכז אמריקה`, discoverer: `Carl Linnaeus`,
@@ -145,6 +145,23 @@ const FishApp = () => {
       },
       {
         id: 9,
+        name: `גונץ' (שפמנון השטן)`,
+        scientificName: `Bagarius yarrelli`,
+        image: `https://i.postimg.cc/m2ccYQJz/1771088073700.png`,
+        etymology: `השם "Goonch" מקורו בהודית מקומית. הוא מכונה "שפמנון השטן" (Giant Devil Catfish) בשל המראה המבעית שלו, עורו הגבשושי הדומה לאבן ושיניו החדות המזדקרות מלסתותיו. השם המדעי yarrelli ניתן כהוקרה לוויליאם יארל, חוקר טבע בריטי בולט.`,
+        childhood: `הדגיגים הצעירים גדלים בזרמים החזקים ביותר של נהרות ההימלאיה. כבר משלבי ה"ילדות" המוקדמים, הם מפתחים יכולת היצמדות לסלעים בעזרת גופם הפחוס וסנפירי החזה החזקים, המאפשרים להם להתמודד עם המים השוצפים עוד לפני שהגיעו לגודל מלא.`,
+        behavior: `ה"אידאולוגיה" שלו היא של שורד הימלאיה קשוח. הוא צייד מארב סלעי מובהק המשתמש בהסוואה מושלמת כדי להיטמע בין אבני הקרקעית. הוא ידוע בסיפורים מקומיים כדג המסוכן ביותר בנהר הגנגס, המסוגל להתמודד עם זרמים שאף יצור אחר לא יכול להם.`,
+        achievements: `זהו אחד הטורפים הגדולים והמסתוריים ביותר של דרום אסיה. הישגו המרכזי הוא היכולת לשגשג בסביבות מים בעלות זרמים עזים במיוחד (Torrents), היכן שרוב הדגים הגדולים נסחפים. הוא הפך לסמל של המערכות האקולוגיות המורכבות של הנהרות ההרריים.`,
+        discoveryCircumstances: `תואר מדעית לראשונה בשנת 1839 על ידי ויליאם הנרי סייקס, קולונל וחוקר טבע בריטי שירת בהודו. הגילוי התרחש במהלך סקר מקיף של עולם החי במחוז דקאן, שם נדהמו החוקרים ממבנהו הפרהיסטורי של הדג.`,
+        size: `2 מטרים`, weight: `90 קילוגרם`, lifespan: `15-20 שנים`,
+        origin: `נהרות דרום אסיה (גנגס, בראהמפוטרה, מקונג)`, discoverer: `William Henry Sykes`,
+        year: `1839`, eggs: `עשרות אלפים`, conservation: `VU`,
+        diet: `טורף מובהק הניזון מדגים, סרטנים ודו-חיים.`,
+        hunting: `מארב פסיבי בין סלעים ותקיפה מתפרצת מבוססת הסוואה.`,
+        reproduction: `הטלה באזורי זרם חזקים במעלה הנהר בעונה הגשומה.`
+      },
+      {
+        id: 10,
         name: `גוראמי ענק`,
         scientificName: `Osphronemus goramy`,
         image: `https://i.postimg.cc/fk8LCvby/1770700436817.png`,
@@ -161,7 +178,7 @@ const FishApp = () => {
         reproduction: `בניית קן בועות וצמחייה ע"י הזכר והגנה אבהית אקטיבית.`
       },
       {
-        id: 21,
+        id: 11,
         name: `דג נמר גולייתי`,
         scientificName: `Hydrocynus goliath`,
         image: `https://i.postimg.cc/nVgWJbtp/1770738224208.png`,
@@ -178,7 +195,7 @@ const FishApp = () => {
         reproduction: `נדידה לאזורים רדודים בעונה הגשומה.`
       },
       {
-        id: 19,
+        id: 12,
         name: `דג סכין ליצן`,
         scientificName: `Chitala ornata`,
         image: `https://i.postimg.cc/y6tGH4zH/1770738177140.png`,
@@ -212,7 +229,7 @@ const FishApp = () => {
         reproduction: `חפירת מאורות עמוקות בבוץ ע"י הזכר להגנה על הצאצאים.`
       },
       {
-        id: 12,
+        id: 14,
         name: `וואלאגו אטו`,
         scientificName: `Wallago attu`,
         image: `https://i.postimg.cc/0rVQnCNM/1770700454603.png`,
@@ -226,10 +243,10 @@ const FishApp = () => {
         year: `1801`, eggs: `כ-40,000`, conservation: `VU`,
         diet: `דגים, ציפורים, צפרדעים ויונקים קטנים המזדמנים למים.`,
         hunting: `תקיפה ישירה ואכזרית של טרף גדול במהירות מסחררת.`,
-        reproduction: `הטלה במים רדודים ובאזורים מוצפים בעונה הגשומה.`
+        reproduction: `הטלה במים רדודים ובאזורי מוצפים בעונה הגשומה.`
       },
       {
-        id: 22,
+        id: 15,
         name: `חדקן`,
         scientificName: `Acipenser sturio`,
         image: `https://i.postimg.cc/LsxB8DzJ/1770823725715.png`,
@@ -246,7 +263,7 @@ const FishApp = () => {
         reproduction: `דגים אנדרומיים (נודדים מהים לנהרות להטלה).`
       },
       {
-        id: 23,
+        id: 16,
         name: `חדקן שיניים אמריקאי`,
         scientificName: `Polyodon spathula`,
         image: `https://i.postimg.cc/9fLtQbGM/1770823734082.png`,
@@ -263,7 +280,7 @@ const FishApp = () => {
         reproduction: `רבייה במים זורמים על גבי קרקעית חצץ באביב.`
       },
       {
-        id: 10,
+        id: 17,
         name: `חתול-דג טיגריסי`,
         scientificName: `Pseudoplatystoma tigrinum`,
         image: `https://i.postimg.cc/PNSxyMqx/1770700441960.png`,
@@ -280,7 +297,7 @@ const FishApp = () => {
         reproduction: `נדידה בנהרות פתוחים והטלה חופשית ללא הגנה הורית.`
       },
       {
-        id: 5,
+        id: 18,
         name: `כריש פרון`,
         scientificName: `Pangasius sanitwongsei`,
         image: `https://i.postimg.cc/Y0G0RFWb/Pangasius-sanitwongsei-1.jpg`,
@@ -297,7 +314,7 @@ const FishApp = () => {
         reproduction: `נדידה עונתית למרחקים עצומים להטלה במעלה נהרות.`
       },
       {
-        id: 2,
+        id: 19,
         name: `פאקו`,
         scientificName: `Piaractus brachypomus`,
         image: `https://i.postimg.cc/bD2NjP6Z/1770654199713.png`,
@@ -314,7 +331,7 @@ const FishApp = () => {
         reproduction: `רבייה עונתית בנהרות פתוחים ונדידה לאזורי הצפה מזינים.`
       },
       {
-        id: 6,
+        id: 20,
         name: `פלקו נפוץ`,
         scientificName: `Hypostomus plecostomus`,
         image: `https://i.postimg.cc/4dWKVNVv/1770654208378.png`,
@@ -331,7 +348,24 @@ const FishApp = () => {
         reproduction: `הטלה בתוך מערות בקרקעית והגנה אבהית הדוקה.`
       },
       {
-        id: 16,
+        id: 21,
+        name: `קרפיון סיאמי ענק`,
+        scientificName: `Catlocarpio siamensis`,
+        image: `https://i.postimg.cc/fk8LCvby/1770700436817.png`,
+        etymology: `השם "סיאמי" מתייחס לממלכת סיאם (תאילנד המודרנית), מקום מוצאו המרכזי. השם המדעי Catlocarpio נגזר מהמילה Catla (שם של קרפיון הודי) ו-Carpio (קרפיון בלטינית). זהו הקרפיון הגדול ביותר בעולם, המכונה בפי המקומיים "מלך הקרפיונים".`,
+        childhood: `הדגיגים הצעירים גדלים באזורי ההצפה הפוריים של נהר המקונג. שלב ה"ילדות" שלהם מאופיין בגדילה מהירה ביותר בתנאי שפע של פלנקטון. בניגוד לבגרותם השלווה, הצעירים חייבים להיות זריזים מאוד כדי להימנע מטורפים מרובים במים הרדודים.`,
+        behavior: `ה"אידאולוגיה" שלו היא של ענק צמחוני שליו. למרות גודלו המפלצתי, הוא אינו טורף. הוא משתמש בפה העצום שלו כדי לסנן פלנקטון, אצות ופירות הנופלים למים. הוא דג ביישן יחסית המעדיף את המעמקים השקטים של הנהרות הגדולים.`,
+        achievements: `זהו הדג הלאומי של קמבודיה וסמל של נהר המקונג. הישגו האקולוגי הוא היכולת להגיע למשקלים של מאות קילוגרמים על תזונה המבוססת על יצורים מיקרוסקופיים בלבד, מה שמהווה פלא של יעילות אנרגטית בממלכת הדגים.`,
+        discoveryCircumstances: `תואר מדעית לראשונה בשנת 1831 על ידי הבוטנאי והזואולוג הצרפתי ז'אן-בטיסט בורי דה סן-וינסנט. הגילוי חשף בפני העולם המערבי דג קרפיון שמגיע לממדים שנתפסו עד אז כבלתי אפשריים עבור משפחת הקרפיוניים.`,
+        size: `3 מטרים`, weight: `300 קילוגרם`, lifespan: `30-50 שנים`,
+        origin: `נהר המקונג והצ'או פראיה, דרום מזרח אסיה`, discoverer: `Jean-Baptiste Bory de Saint-Vincent`,
+        year: `1831`, eggs: `מאות אלפים`, conservation: `CR`,
+        diet: `אוכל-כל עם נטייה לצמחונות (פלנקטון, אצות, פירות).`,
+        hunting: `סינון פלנקטון וליקוח פירות הנסחפים בזרם.`,
+        reproduction: `נדידה לאזורי הצפה במעלה הנהר להטלה עונתית.`
+      },
+      {
+        id: 22,
         name: `צלופח אש`,
         scientificName: `Mastacembelus erythrotaenia`,
         image: `https://i.postimg.cc/2jMtDRfm/1770738215304.png`,
@@ -348,7 +382,7 @@ const FishApp = () => {
         reproduction: `הטלה בין שורשי צמחים או במצעים רכים במים עומדים.`
       },
       {
-        id: 17,
+        id: 23,
         name: `צלופח חשמלי`,
         scientificName: `Electrophorus electricus`,
         image: `https://i.postimg.cc/zD6QrZ1N/1770738184782.png`,
@@ -365,7 +399,7 @@ const FishApp = () => {
         reproduction: `הזכרים בונים קינים מרוק באזורים רדודים והגנה אבהית.`
       },
       {
-        id: 4,
+        id: 24,
         name: `שפמנון אדום-זנב`,
         scientificName: `Phractocephalus hemioliopterus`,
         image: `https://i.postimg.cc/XJsZd7dg/1770654204024.png`,
@@ -382,7 +416,7 @@ const FishApp = () => {
         reproduction: `הטלה פתוחה בנהרות זורמים ללא הגנה הורית אקטיבית.`
       },
       {
-        id: 11,
+        id: 25,
         name: `שפמנון המקונג הענק`,
         scientificName: `Pangasianodon gigas`,
         image: `https://i.postimg.cc/Wt538741/1770700448319.png`,
@@ -399,14 +433,14 @@ const FishApp = () => {
         reproduction: `נדידה ארוכת טווח למקומות הטלה קבועים במעלה המקונג.`
       },
       {
-        id: 24,
+        id: 26,
         name: `שפמנון מסור`,
         scientificName: `Pristis pristis`,
         image: `https://i.postimg.cc/K8RYCjwG/שפמנון_מסור.png`,
         etymology: `השם Pristis נגזר מיוונית ומשמעותו "מסור". למרות השם "שפמנון" שניתן לו לעיתים בעברית עממית בשל מראהו הייחודי ותנועותיו בקרקעית, הוא למעשה דג סחוס ממשפחת המסורניים. החרטום המוארך (Rostrum) מצויד בשיניים חדות המעניקות לו מראה של מסור דו-צדדי אימתני המהווה את סימן ההיכר המרכזי שלו.`,
         childhood: `בניגוד לרוב הדגים, מין זה הוא חי-גור (Ovoviviparous). הדגיגים נולדים כשהם כבר באורך של כ-60 עד 90 סנטימטרים. כדי להגן על האם במהלך הלידה, ה"מסור" שלהם עטוף במעטפת ג'לטינית רכה שמתקשה ונושרת זמן קצר לאחר היציאה למים. הם מבלים את שנותיהם הראשונות במים מתוקים רדודים כדי להימנע מטורפים גדולים כגון כרישים באוקיינוס.`,
         behavior: `ה"אידאולוגיה" שלו היא של צייד טכנולוגי פרהיסטורי. החרטום אינו רק כלי נשק אלא איבר חישה מורכב המצויד באלפי קולטנים אלקטרו-מגנטיים (אמפולות לורנציני) המאפשרים לו לאתר טרף הקבור עמוק בבוץ. הוא משתמש במסור כדי לחבוט בלהקות דגים ולשתק אותם, או כדי לחפור בקרקעית הנהר בחיפוש אחר סרטנים ורכיכות.`,
-        achievements: `זהו אחד הדגים הגדולים והמרשימים ביותר החודרים למערכות מים מתוקים בעולם. הוא שריד לשושלת עתיקה שהתקיימה עוד מתקופת הקרטיקון. היכולת שלו לווסת את המלחים בגופו (Osmoregulation) מאפשרת לו לשרוד בנהרות למרחק של מאות קילומטרים מהים, מה שהופך אותו לאחד הטורפים הסתגלניים והנדירים ביותר בטבע.`,
+        achievements: `זהו אחד הדגים הגדולים והמרשימים ביותר החודרים למערכות מים מתוקים בעולם. הוא שריד לשושלת עתיקה שהתקיימה עוד מתקופת הקרטיקון. היכולת שלו לווסת את המלחים בגופו (Osmoregulation) מאפשרת לו לשרוד בנהרות למרחק של מאות קילוגרמים מהים, מה שהופך אותו לאחד הטורפים הסתגלניים והנדירים ביותר בטבע.`,
         discoveryCircumstances: `תואר מדעית על ידי קארל לינאוס בשנת 1758. הגילוי הראשוני הגיע מדיווחים של מלחים וחוקרי טבע שתיארו "מפלצות עם חרבות" בשפכי נהרות טרופיים. המבנה האנטומי המיוחד שלו, המשלב גוף של כריש עם חרטום של נגר, הפך אותו לאחד המינים המרתקים ביותר בראשית ימי האיכטיולוגיה המודרנית.`,
         size: `7 מטרים`, weight: `600 קילוגרם`, lifespan: `30-35 שנים`,
         origin: `נהרות טרופיים באזור האינדו-פסיפי, אפריקה ודרום אמריקה`, discoverer: `Carl Linnaeus`,
@@ -414,8 +448,26 @@ const FishApp = () => {
         diet: `דגים קטנים, סרטנים ורכיכות קרקעית.`,
         hunting: `חבטה צידית מהירה במסור לשיסוע להקות דגים וחפירה בקרקעית.`,
         reproduction: `השרצת צאצאים חיים במים מתוקים רדודים.`
+      },
+      {
+        id: 27,
+        name: `שפמנון פיראיבה`,
+        scientificName: `Brachyplatystoma filamentosum`,
+        image: `https://i.postimg.cc/wB9TGJfv/1771088122779.png`,
+        etymology: `השם "Piraiba" מקורו בשפת הטופי-גוואראני: Pira (דג) ו-Aiba (רע או נורא), כינוי שניתן לו בשל כוחו העצום וממדיו המפחידים. השם המדעי filamentosum מתייחס לבינים הארוכים דמויי החוטים (Filaments) המעטרים את פיו.`,
+        childhood: `ה"ילדות" של הפיראיבה היא מהארוכות והמפרכות בעולם הדגים. הדגיגים הצעירים נודדים מרחק של מעל 3,000 קילומטרים במעלה האמזונס, נגד הזרמים החזקים ביותר, עד שהם מגיעים לאזורי הגידול השקטים. הם דומים מאוד לשפמנונים קטנים אחרים, אך קצב הגדילה שלהם פנומנלי.`,
+        behavior: `ה"אידאולוגיה" שלו היא של נווד המעמקים. זהו דג שחי בזרמים העמוקים והחזקים ביותר של הנהר (The Channel). הוא ידוע כדג שאינו נח לעולם, ונמצא בתנועה מתמדת. המקומיים מייחסים לו כוחות מיתיים בשל היכולת שלו "להעלים" טרף גדול בבליעה אחת.`,
+        achievements: `זהו השפמנון הגדול ביותר באגן האמזונס ואחד החזקים בעולם. הישגו המרכזי הוא היכולת לבצע את נדידת המים המתוקים הארוכה ביותר בעולם (כ-5,000 ק"מ במחזור חיים שלם), הישג שמחייב חוסן פיזי יוצא דופן ומערכת ניווט ביולוגית מדויקת.`,
+        discoveryCircumstances: `תואר מדעית בשנת 1819 על ידי הזואולוג הגרמני מרטין ליכטנשטיין. הגילוי התרחש במהלך משלחת מחקר גדולה לברזיל שקטלגה את דגי הנהר העצומים, כאשר החוקרים נדהמו לגלות שפמנון שמגיע לממדים של כריש קטן.`,
+        size: `3.6 מטרים`, weight: `200 קילוגרם`, lifespan: `20-25 שנים`,
+        origin: `אגני האמזונס והאורינוקו, דרום אמריקה`, discoverer: `Martin Lichtenstein`,
+        year: `1819`, eggs: `עשרות אלפי ביצים`, conservation: `NE`,
+        diet: `טורף-על הניזון מכל דג מזדמן, כולל שפמנונים אחרים.`,
+        hunting: `מרדף בעומק הנהר ובליעה עוצמתית בפה רחב.`,
+        reproduction: `נדידה ארוכת טווח למקורות הנהר בהרי האנדים להטלה.`
       }
     ];
+    // סדר אלפביתי עברי תקין
     return data.sort((a, b) => a.name.localeCompare(b.name, 'he'));
   }, []);
 
@@ -445,8 +497,8 @@ const FishApp = () => {
       <header className="max-w-4xl mx-auto mb-16 pt-12 text-right px-4">
         <div className="flex items-center justify-between mb-8">
           <div className="animate-in fade-in slide-in-from-right duration-700">
-            <h1 className="text-4xl md:text-6xl font-black text-sky-400 mb-2 tracking-tighter drop-shadow-2xl">ענקי המים</h1>
-            <p className="text-slate-400 text-lg md:text-2xl font-light italic">אנציקלופדיה ביולוגית מקיפה - 24 מינים מורחבים</p>
+            <h1 className="text-4xl md:text-6xl font-black text-sky-400 mb-2 tracking-tighter drop-shadow-2xl text-balance">ענקי המים</h1>
+            <p className="text-slate-400 text-lg md:text-2xl font-light italic text-balance tracking-tight">אנציקלופדיה ביולוגית מקיפה - 27 מינים מורחבים</p>
           </div>
           <div className="p-4 bg-sky-500/10 rounded-[2rem] border border-sky-500/20 hidden sm:block">
             <BookOpen className="w-8 h-8 text-sky-400" />
@@ -493,9 +545,9 @@ const FishApp = () => {
             <div className="p-8 md:p-16 -mt-16 relative z-10 bg-[#0f172a] rounded-t-[2.5rem] md:rounded-t-[4rem]">
               <div className="mb-10 text-right">
                 <div className="flex items-center justify-end gap-3 mb-2">
-                   <h2 className="text-3xl md:text-6xl font-black text-white group-hover:text-sky-400 transition-colors duration-500 leading-tight text-balance">{fish.name}</h2>
+                   <h2 className="text-3xl md:text-5xl font-black text-white group-hover:text-sky-400 transition-colors duration-500 leading-tight text-balance">{fish.name}</h2>
                 </div>
-                <p className="text-sky-500 italic text-lg md:text-2xl font-bold uppercase tracking-widest opacity-80">{fish.scientificName}</p>
+                <p className="text-sky-500 italic text-lg md:text-2xl font-bold uppercase tracking-widest opacity-80 pl-2">{fish.scientificName}</p>
               </div>
 
               {/* Etymology Section */}
@@ -506,7 +558,7 @@ const FishApp = () => {
                 <h3 className="text-sky-400 text-xs md:text-sm font-black uppercase mb-4 flex items-center justify-end gap-3">
                    אטימולוגיה ומשמעות השם המלאה <History className="w-5 h-5" />
                 </h3>
-                <p className="text-slate-200 text-lg md:text-2xl leading-relaxed italic font-light">
+                <p className="text-slate-200 text-lg md:text-2xl leading-relaxed italic font-light text-balance">
                   {fish.etymology}
                 </p>
               </div>
@@ -551,7 +603,7 @@ const FishApp = () => {
                   <h4 className="text-sky-300 font-black mb-6 flex items-center justify-end gap-3 text-lg md:text-xl border-b border-sky-900/40 pb-4 relative z-10">
                     נסיבות גילוי היסטוריות ומחקר <Info className="w-5 h-5 text-sky-400" />
                   </h4>
-                  <p className="text-slate-400 text-base md:text-xl italic leading-relaxed relative z-10 font-light">
+                  <p className="text-slate-400 text-base md:text-xl italic leading-relaxed relative z-10 font-light text-balance">
                     {fish.discoveryCircumstances}
                   </p>
                 </section>
@@ -587,7 +639,7 @@ const FishApp = () => {
         <div className="flex justify-center gap-8 md:gap-16 opacity-20 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-[2s]">
           <Waves className="w-8 h-8" /><History className="w-8 h-8" /><BookOpen className="w-8 h-8" /><Star className="w-8 h-8" />
         </div>
-        <p className="text-slate-700 text-[10px] mt-10 italic font-medium">Samsung S25 Ultra Edition • Deep Research Algorithm 6.0</p>
+        <p className="text-slate-700 text-[10px] mt-10 italic font-medium uppercase tracking-[0.2em]">Samsung S25 Ultra Edition • Deep Research Algorithm 6.0</p>
       </footer>
     </div>
   );
