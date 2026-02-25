@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ענקי המים - האנציקלופדיה המלאה V25 (Modular)</title>
+    <title>ענקי המים - האנציקלופדיה המודולרית V25</title>
     <!-- Core Engine -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -12,10 +12,10 @@
     <!-- Icons Script -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- טעינת הנתונים מהקבצים החיצוניים שיצרנו בתיקיית data -->
+    <!-- טעינת הנתונים מהקבצים המודולריים בתיקיית data -->
     <script src="data/pool_legends.js"></script>
     <script src="data/glass_tanks.js"></script>
-    <script src="data/asian_giants.js"></script>
+    <script src="data/world_monsters.js"></script>
     <script src="data/ancient_survivors.js"></script>
 
     <style>
@@ -37,7 +37,6 @@
         }
         .text-balance { text-wrap: balance; }
         
-        /* Tab Animation Styles */
         .tab-btn {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -48,18 +47,11 @@
             color: #38bdf8;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
         .animate-card { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .animate-fade { animation: fadeIn 0.5s ease-in-out forwards; }
         
-        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
@@ -72,7 +64,6 @@
     <script type="text/babel">
         const { useState, useMemo, useEffect, useRef } = React;
 
-        // רכיב האייקונים היציב
         const LucideIcon = ({ name, className = "w-6 h-6" }) => {
             const iconRef = useRef(null);
             useEffect(() => {
@@ -94,300 +85,177 @@
         const FishApp = () => {
             const [selectedFish, setSelectedFish] = useState(null);
             const [searchTerm, setSearchTerm] = useState('');
-            const [activeTab, setActiveTab] = useState('all'); // State לניהול הטאבים
+            const [activeTab, setActiveTab] = useState('all');
 
-            // 1. איסוף הנתונים מכל הקבצים החיצוניים בצורה מאובטחת
+            // איחוד ואימות נתונים מ-4 המערכים
             const allFishData = useMemo(() => {
                 const pool = window.fishData_PoolLegends || [];
                 const glass = window.fishData_GlassTanks || [];
-                const asian = window.fishData_AsianGiants || [];
+                const world = window.fishData_WorldMonsters || [];
                 const ancient = window.fishData_AncientSurvivors || [];
-                
-                // איחוד כל המערכים למערך אחד גדול למקרה של תצוגת "הכל" או חיפוש גלובלי
-                return [...pool, ...glass, ...asian, ...ancient];
+                return [...pool, ...glass, ...world, ...ancient];
             }, []);
 
-            // 2. סינון לפי הטאב הנבחר + מיון אלפביתי
+            // סינון לפי טאב
             const fishForDisplay = useMemo(() => {
-                let currentData = [];
+                let data = [];
                 switch(activeTab) {
-                    case 'pool': currentData = window.fishData_PoolLegends || []; break;
-                    case 'glass': currentData = window.fishData_GlassTanks || []; break;
-                    case 'asian': currentData = window.fishData_AsianGiants || []; break;
-                    case 'ancient': currentData = window.fishData_AncientSurvivors || []; break;
-                    case 'all': default: currentData = allFishData; break;
+                    case 'pool': data = window.fishData_PoolLegends || []; break;
+                    case 'glass': data = window.fishData_GlassTanks || []; break;
+                    case 'world': data = window.fishData_WorldMonsters || []; break;
+                    case 'ancient': data = window.fishData_AncientSurvivors || []; break;
+                    default: data = allFishData;
                 }
-                return currentData.sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                return [...data].sort((a, b) => a.name.localeCompare(b.name, 'he'));
             }, [activeTab, allFishData]);
 
-            // 3. סינון סופי לפי שורת החיפוש
+            // חיפוש
             const filteredFish = useMemo(() => {
                 const term = searchTerm.toLowerCase();
                 if (!term) return fishForDisplay;
-                
-                return fishForDisplay.filter(fish => {
-                    return (
-                        fish.name.includes(term) ||
-                        fish.scientificName.toLowerCase().includes(term) ||
-                        fish.discoverer.toLowerCase().includes(term) ||
-                        fish.etymology.toLowerCase().includes(term)
-                    );
-                });
+                return fishForDisplay.filter(f => 
+                    f.name.includes(term) || f.scientificName.toLowerCase().includes(term) ||
+                    f.etymology.toLowerCase().includes(term)
+                );
             }, [fishForDisplay, searchTerm]);
 
-            // צבעי תגיות שימור
-            const getStatusColor = (status) => {
-                switch(status) {
-                    case 'CR': return 'text-red-500 bg-red-500/10 border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.4)]';
-                    case 'VU': return 'text-orange-400 bg-orange-400/10 border-orange-400/20 shadow-[0_0_15px_rgba(251,146,60,0.4)]';
-                    case 'LC': return 'text-green-500 bg-green-500/10 border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.4)]';
-                    case 'DD': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.4)]';
+            const getStatusColor = (s) => {
+                switch(s) {
+                    case 'CR': return 'text-red-500 bg-red-500/10 border-red-500/20';
+                    case 'VU': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
+                    case 'LC': return 'text-green-500 bg-green-500/10 border-green-500/20';
+                    case 'EN': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
                     default: return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
                 }
             };
 
-            // גלילה למעלה בעת בחירת דג או החלפת טאב
-            useEffect(() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, [selectedFish, activeTab]);
+            useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [selectedFish, activeTab]);
 
-            // הגדרת הטאבים
             const tabs = [
                 { id: 'all', label: 'כל המפלצות', icon: 'globe' },
-                { id: 'pool', label: 'אגדות הבריכה', icon: 'droplets' },
+                { id: 'pool', label: 'האגם המפלצתי', icon: 'droplets' },
                 { id: 'glass', label: 'מיכלי זכוכית', icon: 'box' },
-                { id: 'asian', label: 'ענקי אסיה', icon: 'map-pin' },
+                { id: 'world', label: 'מפלצות עולם', icon: 'map' },
                 { id: 'ancient', label: 'שורדים עתיקים', icon: 'clock' }
             ];
 
-            // ---------------------------------------------------------
-            // תצוגה מס' 1: עמוד דג מלא (Detail View)
-            // ---------------------------------------------------------
             if (selectedFish) {
-                const fish = selectedFish;
+                const f = selectedFish;
                 return (
                     <div className="min-h-screen bg-[#020617] pb-24 animate-fade" dir="rtl">
                         <div className="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-xl border-b border-slate-800/50 p-4 mb-8">
                             <div className="max-w-4xl mx-auto flex items-center justify-between">
-                                <button 
-                                    onClick={() => setSelectedFish(null)}
-                                    className="flex items-center gap-3 text-sky-400 bg-sky-500/10 px-6 py-3 rounded-full hover:bg-sky-500/20 transition-all font-bold border border-sky-500/20 shadow-[0_0_20px_rgba(56,189,248,0.1)] active:scale-95"
-                                >
+                                <button onClick={() => setSelectedFish(null)} className="flex items-center gap-3 text-sky-400 bg-sky-500/10 px-6 py-3 rounded-full hover:bg-sky-500/20 transition-all font-bold border border-sky-500/20 active:scale-95">
                                     <LucideIcon name="arrow-right" className="w-5 h-5" />
                                     <span>חזור לגלריה</span>
                                 </button>
-                                <span className="text-slate-500 text-sm font-bold opacity-70 hidden md:block">מערכת ענקי המים V25</span>
+                                <span className="text-slate-500 text-sm font-bold opacity-70 hidden md:block tracking-widest">S25 ULTRA EDITION</span>
                             </div>
                         </div>
 
                         <main className="max-w-4xl mx-auto px-4">
-                            <article className="glass-card rounded-[4rem] md:rounded-[5rem] overflow-hidden s25-ultra-shadow group relative animate-card">
-                                <div className="w-full h-[450px] md:h-[650px] bg-slate-800 relative overflow-hidden">
-                                    <img 
-                                        src={fish.image} 
-                                        alt={fish.name} 
-                                        className="w-full h-full object-cover transition-transform duration-[6s] group-hover:scale-110" 
-                                        loading="lazy" 
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-[#0f172a]/25 to-transparent"></div>
-                                    <div className="absolute top-12 left-12 scale-150">
-                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black border backdrop-blur-3xl shadow-2xl ${getStatusColor(fish.conservation)}`}>
-                                            IUCN: {fish.conservation}
-                                        </div>
+                            <article className="glass-card rounded-[4rem] overflow-hidden s25-ultra-shadow animate-card">
+                                <div className="w-full h-[450px] md:h-[600px] bg-slate-800 relative">
+                                    <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent"></div>
+                                    <div className="absolute top-10 left-10">
+                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black border backdrop-blur-xl ${getStatusColor(f.conservation)}`}>IUCN: {f.conservation}</div>
                                     </div>
                                 </div>
 
-                                <div className="p-10 md:p-24 -mt-24 relative z-10 glass-card rounded-t-[4rem] md:rounded-t-[5rem]">
-                                    <div className="mb-14 text-right border-b border-[#1e293b] pb-12">
-                                        <h2 className="text-5xl md:text-8xl font-extrabold text-white group-hover:text-sky-400 transition-colors duration-700 leading-tight mb-4 text-balance">{fish.name}</h2>
-                                        <p className="text-sky-500 italic text-2xl md:text-4xl font-bold uppercase tracking-[0.2em] opacity-90 drop-shadow-lg">{fish.scientificName}</p>
-                                    </div>
+                                <div className="p-10 md:p-20 -mt-20 relative z-10 glass-card rounded-t-[4rem]">
+                                    <h2 className="text-5xl md:text-7xl font-extrabold text-white mb-4">{f.name}</h2>
+                                    <p className="text-sky-500 italic text-xl md:text-3xl font-bold tracking-widest mb-12">{f.scientificName}</p>
 
-                                    <div className="mb-20 border-r-[16px] border-sky-500 bg-gradient-to-l from-sky-500/10 to-transparent p-12 md:p-16 rounded-l-[3.5rem] text-right relative overflow-hidden shadow-inner">
-                                        <div className="absolute -top-12 -left-12 opacity-[0.05] rotate-12 transition-transform group-hover:rotate-0 duration-[3s]">
-                                            <LucideIcon name="book-open" className="w-80 h-80 text-sky-400" />
-                                        </div>
-                                        <h3 className="text-sky-400 text-sm md:text-base font-black uppercase mb-8 flex items-center justify-end gap-5 tracking-[0.3em]">
-                                            פירוש ומקור השם המלא <LucideIcon name="history" className="w-8 h-8" />
+                                    <div className="mb-20 border-r-[12px] border-sky-500 bg-sky-500/5 p-10 rounded-l-3xl">
+                                        <h3 className="text-sky-400 text-xs font-black uppercase mb-4 flex items-center gap-3 tracking-widest">
+                                            פירוש ומקור השם המלא <LucideIcon name="history" className="w-5 h-5" />
                                         </h3>
-                                        <p className="text-slate-100 text-2xl md:text-3xl leading-relaxed italic font-light relative z-10 text-balance border-t border-sky-500/20 pt-6">
-                                            {fish.etymology}
-                                        </p>
+                                        <p className="text-slate-100 text-xl md:text-2xl leading-relaxed italic font-light">{f.etymology}</p>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-24 text-right">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
                                         {[
-                                            { icon: 'scale', label: 'גודל ומשקל', val: fish.size, sub: fish.weight },
-                                            { icon: 'calendar', label: 'תוחלת ורבייה', val: fish.lifespan, sub: fish.eggs },
-                                            { icon: 'globe', label: 'מקור גאוגרפי', val: fish.origin, sub: '' },
-                                            { icon: 'user', label: 'מגלה המין', val: fish.discoverer, sub: fish.year }
+                                            { i: 'scale', l: 'גודל ומשקל', v: f.size, s: f.weight },
+                                            { i: 'calendar', l: 'תוחלת וביצים', v: f.lifespan, s: f.eggs },
+                                            { i: 'globe', l: 'מקור', v: f.origin, s: '' },
+                                            { i: 'user', l: 'מגלה ושנה', v: f.discoverer, s: f.year }
                                         ].map((item, idx) => (
-                                            <div key={idx} className="bg-slate-900/80 p-8 md:p-10 rounded-[3rem] border border-[#1e293b] flex flex-col items-center text-center shadow-2xl hover:bg-sky-500/10 transition-all duration-500 hover:-translate-y-2">
-                                                <LucideIcon name={item.icon} className="w-8 h-8 md:w-10 md:h-10 text-sky-500 mb-6" />
-                                                <span className="text-[10px] md:text-xs text-slate-500 font-bold mb-3 uppercase tracking-widest">{item.label}</span>
-                                                <span className="text-lg md:text-2xl font-black text-white leading-tight">{item.val}</span>
-                                                {item.sub && <span className="text-xs md:text-base font-bold text-slate-400 mt-3">{item.sub}</span>}
+                                            <div key={idx} className="bg-slate-900/50 p-6 rounded-[2rem] border border-slate-800 flex flex-col items-center text-center">
+                                                <LucideIcon name={item.i} className="w-6 h-6 text-sky-500 mb-4" />
+                                                <span className="text-[10px] text-slate-500 font-bold mb-2 uppercase">{item.l}</span>
+                                                <span className="text-sm md:text-lg font-black text-white">{item.v}</span>
+                                                {item.s && <span className="text-[10px] text-slate-400 mt-1">{item.s}</span>}
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="space-y-32 text-right">
-                                        <section className="animate-in slide-in-from-right duration-700">
-                                            <h4 className="text-white font-black mb-12 flex items-center justify-end gap-6 text-3xl md:text-5xl border-b-4 border-slate-800 pb-10">
-                                                תהליכי גדילה ומחזור חיים ("ילדות") <LucideIcon name="baby" className="w-12 h-12 md:w-16 md:h-16 text-yellow-500" />
+                                    <div className="space-y-24">
+                                        <section>
+                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
+                                                ילדות ומחזור חיים <LucideIcon name="baby" className="w-8 h-8 text-yellow-500" />
                                             </h4>
-                                            <p className="text-slate-300 text-xl md:text-3xl leading-relaxed font-light text-balance opacity-90">{fish.childhood}</p>
+                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light">{f.childhood}</p>
                                         </section>
-
-                                        <section className="animate-in slide-in-from-right duration-700 delay-100">
-                                            <h4 className="text-white font-black mb-12 flex items-center justify-end gap-6 text-3xl md:text-5xl border-b-4 border-slate-800 pb-10">
-                                                דפוסי התנהגות ואסטרטגיה ("אידאולוגיה") <LucideIcon name="shield-alert" className="w-12 h-12 md:w-16 md:h-16 text-red-500" />
+                                        <section>
+                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
+                                                אידאולוגיה והתנהגות <LucideIcon name="shield-alert" className="w-8 h-8 text-red-500" />
                                             </h4>
-                                            <p className="text-slate-300 text-xl md:text-3xl leading-relaxed font-light text-balance opacity-90">{fish.behavior}</p>
+                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light">{f.behavior}</p>
                                         </section>
-
-                                        <section className="animate-in slide-in-from-right duration-700 delay-200">
-                                            <h4 className="text-white font-black mb-12 flex items-center justify-end gap-6 text-3xl md:text-5xl border-b-4 border-slate-800 pb-10">
-                                                ייחודיות והישגים אקולוגיים <LucideIcon name="star" className="w-12 h-12 md:w-16 md:h-16 text-sky-400" />
+                                        <section>
+                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
+                                                הישגים וייחודיות <LucideIcon name="star" className="w-8 h-8 text-sky-400" />
                                             </h4>
-                                            <p className="text-slate-300 text-xl md:text-3xl leading-relaxed font-light text-balance opacity-90">{fish.achievements}</p>
+                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light">{f.achievements}</p>
                                         </section>
-
-                                        <section className="bg-slate-900/60 p-10 md:p-20 rounded-[4rem] border border-sky-500/15 shadow-2xl group/discover transition-all hover:border-sky-500/40">
-                                            <h4 className="text-sky-300 font-black mb-10 flex items-center justify-end gap-6 text-2xl md:text-3xl border-b border-sky-900/50 pb-8 tracking-[0.2em] uppercase">
-                                                נסיבות גילוי היסטוריות ומחקר <LucideIcon name="info" className="w-8 h-8 md:w-9 md:h-9 text-sky-400" />
-                                            </h4>
-                                            <p className="text-slate-400 text-lg md:text-2xl italic leading-relaxed font-light text-balance">{fish.discoveryCircumstances}</p>
-                                        </section>
-                                    </div>
-
-                                    <div className="mt-32 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                                        <div className="bg-[#020617] p-10 md:p-14 rounded-[3rem] md:rounded-[4rem] border-2 border-[#1e293b] flex flex-col gap-6 md:gap-8 shadow-2xl hover:border-red-500/30 transition-all duration-500">
-                                            <div className="flex items-center gap-5 md:gap-6 border-b border-[#1e293b] pb-6 md:pb-8">
-                                                <LucideIcon name="target" className="w-10 h-10 md:w-12 md:h-12 text-red-500" />
-                                                <span className="text-xs md:text-sm font-black text-slate-500 uppercase tracking-[0.4em]">שיטת צייד אסטרטגית</span>
-                                            </div>
-                                            <span className="text-2xl md:text-4xl font-bold text-slate-200 leading-tight">{fish.hunting}</span>
-                                        </div>
-                                        <div className="bg-[#020617] p-10 md:p-14 rounded-[3rem] md:rounded-[4rem] border-2 border-[#1e293b] flex flex-col gap-6 md:gap-8 shadow-2xl hover:border-sky-500/30 transition-all duration-500">
-                                            <div className="flex items-center gap-5 md:gap-6 border-b border-[#1e293b] pb-6 md:pb-8">
-                                                <LucideIcon name="activity" className="w-10 h-10 md:w-12 md:h-12 text-sky-400" />
-                                                <span className="text-xs md:text-sm font-black text-slate-500 uppercase tracking-[0.4em]">בסיס תזונה עיקרי</span>
-                                            </div>
-                                            <span className="text-2xl md:text-4xl font-bold text-slate-200 leading-tight">{fish.diet}</span>
-                                        </div>
                                     </div>
                                 </div>
                             </article>
                         </main>
-                        
-                        <footer className="max-w-4xl mx-auto mt-32 text-center border-t border-[#1e293b] pt-20 px-10 mb-12 opacity-70">
-                            <p className="text-slate-500 text-sm font-black tracking-[0.8em] uppercase">מערכת מחקר ענקי המים | עמוד דג מלא</p>
-                        </footer>
                     </div>
                 );
             }
 
-            // ---------------------------------------------------------
-            // תצוגה מס' 2: עמוד הבית / גלריה עם טאבים
-            // ---------------------------------------------------------
             return (
                 <div className="min-h-screen bg-[#020617] pb-24 animate-fade" dir="rtl">
-                    <header className="max-w-6xl mx-auto mb-10 pt-16 text-center px-6">
-                        <div className="animate-in fade-in duration-1000 flex flex-col items-center">
-                            <LucideIcon name="waves" className="w-16 h-16 text-sky-500 mb-6 opacity-80" />
-                            <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-400 to-blue-600 mb-4 tracking-tighter drop-shadow-2xl">ענקי המים</h1>
-                            <p className="text-slate-400 text-xl md:text-2xl font-light italic text-balance mb-2">אנציקלופדיה ביולוגית מודולרית</p>
-                            <p className="text-sky-500/50 text-sm font-bold tracking-[0.3em] uppercase mb-10">מציג {filteredFish.length} מתוך {allFishData.length} מפלצות</p>
-                        </div>
+                    <header className="max-w-6xl mx-auto pt-16 text-center px-6">
+                        <LucideIcon name="waves" className="w-12 h-12 text-sky-500 mb-6 mx-auto opacity-80" />
+                        <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-400 to-blue-600 mb-4 tracking-tighter drop-shadow-2xl">ענקי המים</h1>
+                        <p className="text-slate-400 text-xl font-light italic mb-8">אנציקלופדיה ביולוגית • {allFishData.length} מינים</p>
                         
-                        {/* סרגל החיפוש */}
-                        <div className="relative max-w-2xl mx-auto group mb-10">
-                            <input
-                                type="text"
-                                placeholder="חיפוש חכם (שם, מונח מדעי, מגלה, אטימולוגיה)..."
-                                className="w-full bg-[#0f172a]/80 backdrop-blur-xl border-2 border-[#1e293b] rounded-[2rem] py-5 pr-14 pl-8 focus:ring-8 focus:ring-sky-500/10 focus:border-sky-400 focus:outline-none text-xl transition-all shadow-2xl placeholder:text-slate-600 text-right font-medium"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <LucideIcon name="search" className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-sky-400 w-6 h-6 transition-colors duration-300" />
+                        <div className="relative max-w-xl mx-auto group mb-10">
+                            <input type="text" placeholder="חיפוש חופשי..." className="w-full bg-[#0f172a] border-2 border-slate-800 rounded-full py-4 pr-12 pl-6 focus:border-sky-500 focus:outline-none transition-all text-xl shadow-xl" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                            <LucideIcon name="search" className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 w-6 h-6" />
                         </div>
 
-                        {/* סרגל הטאבים (חדש!) */}
-                        <div className="flex flex-wrap justify-center gap-3 md:gap-4 max-w-4xl mx-auto">
-                            {tabs.map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => {
-                                        setActiveTab(tab.id);
-                                        setSearchTerm(''); // איפוס חיפוש במעבר טאב
-                                    }}
-                                    className={`tab-btn flex items-center gap-2 px-5 py-3 rounded-full border-2 text-sm md:text-base font-bold ${
-                                        activeTab === tab.id 
-                                        ? 'active' 
-                                        : 'border-[#1e293b] bg-slate-900/50 text-slate-400 hover:bg-[#1e293b] hover:text-slate-200'
-                                    }`}
-                                >
-                                    <LucideIcon name={tab.icon} className="w-4 h-4 md:w-5 md:h-5" />
-                                    {tab.label}
+                        <div className="flex flex-wrap justify-center gap-2 mb-12">
+                            {tabs.map(t => (
+                                <button key={t.id} onClick={() => { setActiveTab(t.id); setSearchTerm(''); }} className={`tab-btn flex items-center gap-2 px-6 py-3 rounded-full border-2 text-sm font-bold ${activeTab === t.id ? 'active' : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white'}`}>
+                                    <LucideIcon name={t.icon} className="w-4 h-4" />
+                                    {t.label}
                                 </button>
                             ))}
                         </div>
                     </header>
 
-                    <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                        {filteredFish.map((fish, index) => (
-                            <div 
-                                key={fish.id || index} 
-                                onClick={() => setSelectedFish(fish)}
-                                className="glass-card rounded-[2.5rem] overflow-hidden cursor-pointer hover:-translate-y-3 hover:border-sky-500/40 hover:shadow-[0_20px_40px_-15px_rgba(56,189,248,0.15)] transition-all duration-500 group flex flex-col animate-card"
-                                style={{ animationDelay: `${index * 0.05}s` }}
-                            >
-                                <div className="h-64 relative overflow-hidden bg-slate-800 w-full border-b border-[#1e293b]">
-                                    <img 
-                                        src={fish.image} 
-                                        alt={fish.name} 
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s]" 
-                                        loading="lazy"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-80"></div>
-                                    <div className="absolute top-4 right-4">
-                                        <span className={`px-4 py-1.5 rounded-full text-xs font-black border backdrop-blur-xl shadow-lg ${getStatusColor(fish.conservation)}`}>
-                                            {fish.conservation}
-                                        </span>
-                                    </div>
+                    <main className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {filteredFish.map((fish, i) => (
+                            <div key={fish.id || i} onClick={() => setSelectedFish(fish)} className="glass-card rounded-[2rem] overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-sky-500/50 transition-all duration-500 animate-card" style={{ animationDelay: `${i * 0.03}s` }}>
+                                <div className="h-56 overflow-hidden bg-slate-800">
+                                    <img src={fish.image} alt={fish.name} className="w-full h-full object-cover" loading="lazy" />
                                 </div>
-                                <div className="p-6 text-right flex-1 flex flex-col justify-between bg-gradient-to-b from-[#0f172a] to-[#020617]">
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-slate-100 mb-2 group-hover:text-sky-400 transition-colors leading-tight">{fish.name}</h3>
-                                        <p className="text-sm text-sky-500/70 italic font-semibold tracking-wide" dir="ltr">{fish.scientificName}</p>
-                                    </div>
-                                    <div className="mt-6 flex items-center justify-end text-slate-500 group-hover:text-sky-400 transition-colors gap-2">
-                                        <span className="text-sm font-bold">קרא עוד</span>
-                                        <LucideIcon name="arrow-left" className="w-4 h-4" />
-                                    </div>
+                                <div className="p-6 text-right">
+                                    <h3 className="text-xl font-bold text-white mb-1">{fish.name}</h3>
+                                    <p className="text-xs text-sky-500/70 italic font-bold" dir="ltr">{fish.scientificName}</p>
+                                    <div className={`mt-4 inline-block px-3 py-1 rounded-full text-[9px] font-black border ${getStatusColor(fish.conservation)}`}>{fish.conservation}</div>
                                 </div>
                             </div>
                         ))}
                     </main>
 
-                    {filteredFish.length === 0 && (
-                        <div className="text-center text-slate-500 mt-20 text-2xl font-light">
-                            לא נמצאו דגים בקטגוריה זו או התואמים לחיפוש שלך.
-                            <br />
-                            <span className="text-sm mt-4 block opacity-50">(וודא שקבצי ה-data נטענו כראוי)</span>
-                        </div>
-                    )}
-
-                    <footer className="max-w-4xl mx-auto mt-40 text-center border-t border-[#1e293b] pt-20 px-10 mb-20 opacity-70">
-                        <div className="flex justify-center gap-16 text-slate-700 grayscale hover:grayscale-0 transition-all duration-1000 mb-12">
-                             <LucideIcon name="anchor" className="w-10 h-10" />
-                             <LucideIcon name="database" className="w-10 h-10" />
-                             <LucideIcon name="microscope" className="w-10 h-10" />
-                        </div>
-                        <p className="text-slate-800 text-[11px] md:text-xs font-bold tracking-[0.3em] uppercase italic leading-relaxed">
-                            Samsung S25 Ultra Edition • Modular Architecture • V25
-                        </p>
+                    <footer className="max-w-4xl mx-auto mt-40 text-center border-t border-slate-900 pt-10 pb-20 opacity-40">
+                        <p className="text-[10px] font-black tracking-[0.5em] uppercase">V25 MODULAR ARCHITECTURE • S25 ULTRA OPTIMIZED</p>
                     </footer>
                 </div>
             );
@@ -398,3 +266,4 @@
     </script>
 </body>
 </html>
+
