@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ענקי המים - האנציקלופדיה המודולרית V25</title>
+    <title>ענקי המים - האנציקלופדיה המודולרית V25.1</title>
+    
+    <!-- מלכודת שגיאות גלובלית (מונעת מסך שחור ומציגה את הבעיה) -->
+    <script>
+        window.addEventListener('error', function(event) {
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background-color:#7f1d1d;color:white;padding:20px;z-index:99999;overflow-y:auto;direction:ltr;font-family:monospace;';
+            errorDiv.innerHTML = '<h2 style="font-size:24px;margin-bottom:10px;">🚨 שגיאת מערכת חמורה (System Crash)</h2>' +
+                                 '<p style="font-size:16px;"><b>Message:</b> ' + event.message + '</p>' +
+                                 '<p style="font-size:14px;"><b>Source:</b> ' + event.filename + ' (Line: ' + event.lineno + ')</p>' +
+                                 '<div dir="rtl" style="margin-top:30px;font-size:20px;font-weight:bold;background:rgba(0,0,0,0.5);padding:15px;border-radius:10px;text-align:center; border: 2px solid white;">רם, המערכת תפסה את הבאג!<br/>אנא צלם לי את המסך הזה בדיוק ככה כדי שאדע מה לתקן.</div>';
+            document.body.appendChild(errorDiv);
+        });
+    </script>
+
     <!-- Core Engine -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Icons Script -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- טעינת הנתונים מהקבצים המודולריים בתיקיית data -->
@@ -32,14 +45,10 @@
             backdrop-filter: blur(20px); 
             border: 1px solid rgba(56, 189, 248, 0.15);
         }
-        .s25-ultra-shadow {
-            box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.05);
-        }
+        .s25-ultra-shadow { box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.05); }
         .text-balance { text-wrap: balance; }
         
-        .tab-btn {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .tab-btn.active {
             background: rgba(56, 189, 248, 0.15);
             border-color: rgba(56, 189, 248, 0.5);
@@ -64,6 +73,38 @@
     <script type="text/babel">
         const { useState, useMemo, useEffect, useRef } = React;
 
+        // מנגנון הגנה פנימי של React נגד קריסות
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null, errorInfo: null };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, error };
+            }
+            componentDidCatch(error, errorInfo) {
+                this.setState({ errorInfo });
+            }
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="fixed inset-0 bg-red-900 text-white p-6 z-50 overflow-y-auto" dir="ltr">
+                            <h2 className="text-3xl font-bold mb-4">React Render Error 🚨</h2>
+                            <p className="text-lg font-mono bg-black/30 p-4 rounded mb-4">{this.state.error && this.state.error.toString()}</p>
+                            <pre className="text-xs font-mono whitespace-pre-wrap bg-black/50 p-4 rounded">
+                                {this.state.errorInfo && this.state.errorInfo.componentStack}
+                            </pre>
+                            <div dir="rtl" className="mt-8 p-6 bg-black/40 rounded-xl text-center border-2 border-white/20 shadow-2xl">
+                                <h3 className="text-2xl font-bold mb-2">רם, עצרנו את המסך השחור!</h3>
+                                <p className="text-lg">המערכת בודדה את הבעיה. צלם לי את המסך הזה ומיד נדע איזה קובץ עושה לנו בעיות.</p>
+                            </div>
+                        </div>
+                    );
+                }
+                return this.props.children;
+            }
+        }
+
         const LucideIcon = ({ name, className = "w-6 h-6" }) => {
             const iconRef = useRef(null);
             useEffect(() => {
@@ -87,16 +128,14 @@
             const [searchTerm, setSearchTerm] = useState('');
             const [activeTab, setActiveTab] = useState('all');
 
-            // איחוד ואימות נתונים מ-4 המערכים
             const allFishData = useMemo(() => {
                 const pool = window.fishData_PoolLegends || [];
                 const glass = window.fishData_GlassTanks || [];
                 const world = window.fishData_WorldMonsters || [];
                 const ancient = window.fishData_AncientSurvivors || [];
-                return [...pool, ...glass, ...world, ...ancient];
+                return [...pool, ...glass, ...world, ...ancient].filter(item => item && item.id && item.name);
             }, []);
 
-            // סינון לפי טאב
             const fishForDisplay = useMemo(() => {
                 let data = [];
                 switch(activeTab) {
@@ -106,17 +145,21 @@
                     case 'ancient': data = window.fishData_AncientSurvivors || []; break;
                     default: data = allFishData;
                 }
-                return [...data].sort((a, b) => a.name.localeCompare(b.name, 'he'));
+                return [...data]
+                    .filter(item => item && item.name)
+                    .sort((a, b) => a.name.localeCompare(b.name, 'he'));
             }, [activeTab, allFishData]);
 
-            // חיפוש
             const filteredFish = useMemo(() => {
                 const term = searchTerm.toLowerCase();
                 if (!term) return fishForDisplay;
-                return fishForDisplay.filter(f => 
-                    f.name.includes(term) || f.scientificName.toLowerCase().includes(term) ||
-                    f.etymology.toLowerCase().includes(term)
-                );
+                return fishForDisplay.filter(f => {
+                    if (!f) return false;
+                    const matchName = f.name ? f.name.includes(term) : false;
+                    const matchSci = f.scientificName ? f.scientificName.toLowerCase().includes(term) : false;
+                    const matchEty = f.etymology ? f.etymology.toLowerCase().includes(term) : false;
+                    return matchName || matchSci || matchEty;
+                });
             }, [fishForDisplay, searchTerm]);
 
             const getStatusColor = (s) => {
@@ -156,10 +199,10 @@
                         <main className="max-w-4xl mx-auto px-4">
                             <article className="glass-card rounded-[4rem] overflow-hidden s25-ultra-shadow animate-card">
                                 <div className="w-full h-[450px] md:h-[600px] bg-slate-800 relative">
-                                    <img src={f.image} alt={f.name} className="w-full h-full object-cover" />
+                                    <img src={f.image || ''} alt={f.name || ''} className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent"></div>
                                     <div className="absolute top-10 left-10">
-                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black border backdrop-blur-xl ${getStatusColor(f.conservation)}`}>IUCN: {f.conservation}</div>
+                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black border backdrop-blur-xl ${getStatusColor(f.conservation)}`}>IUCN: {f.conservation || 'N/A'}</div>
                                     </div>
                                 </div>
 
@@ -184,7 +227,7 @@
                                             <div key={idx} className="bg-slate-900/50 p-6 rounded-[2rem] border border-slate-800 flex flex-col items-center text-center">
                                                 <LucideIcon name={item.i} className="w-6 h-6 text-sky-500 mb-4" />
                                                 <span className="text-[10px] text-slate-500 font-bold mb-2 uppercase">{item.l}</span>
-                                                <span className="text-sm md:text-lg font-black text-white">{item.v}</span>
+                                                <span className="text-sm md:text-lg font-black text-white">{item.v || '-'}</span>
                                                 {item.s && <span className="text-[10px] text-slate-400 mt-1">{item.s}</span>}
                                             </div>
                                         ))}
@@ -243,27 +286,30 @@
                         {filteredFish.map((fish, i) => (
                             <div key={fish.id || i} onClick={() => setSelectedFish(fish)} className="glass-card rounded-[2rem] overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-sky-500/50 transition-all duration-500 animate-card" style={{ animationDelay: `${i * 0.03}s` }}>
                                 <div className="h-56 overflow-hidden bg-slate-800">
-                                    <img src={fish.image} alt={fish.name} className="w-full h-full object-cover" loading="lazy" />
+                                    <img src={fish.image || ''} alt={fish.name || ''} className="w-full h-full object-cover" loading="lazy" />
                                 </div>
                                 <div className="p-6 text-right">
                                     <h3 className="text-xl font-bold text-white mb-1">{fish.name}</h3>
                                     <p className="text-xs text-sky-500/70 italic font-bold" dir="ltr">{fish.scientificName}</p>
-                                    <div className={`mt-4 inline-block px-3 py-1 rounded-full text-[9px] font-black border ${getStatusColor(fish.conservation)}`}>{fish.conservation}</div>
+                                    <div className={`mt-4 inline-block px-3 py-1 rounded-full text-[9px] font-black border ${getStatusColor(fish.conservation)}`}>{fish.conservation || 'N/A'}</div>
                                 </div>
                             </div>
                         ))}
                     </main>
 
                     <footer className="max-w-4xl mx-auto mt-40 text-center border-t border-slate-900 pt-10 pb-20 opacity-40">
-                        <p className="text-[10px] font-black tracking-[0.5em] uppercase">V25 MODULAR ARCHITECTURE • S25 ULTRA OPTIMIZED</p>
+                        <p className="text-[10px] font-black tracking-[0.5em] uppercase">V25.1 MODULAR ARCHITECTURE • S25 ULTRA OPTIMIZED</p>
                     </footer>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<FishApp />);
+        root.render(
+            <ErrorBoundary>
+                <FishApp />
+            </ErrorBoundary>
+        );
     </script>
 </body>
 </html>
-
