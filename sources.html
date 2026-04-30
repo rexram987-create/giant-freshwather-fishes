@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מקורות מדעיים - ענקי המים</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="data/pool_legends.js"></script>
+  <script src="data/glass_tanks.js"></script>
+  <script src="data/world_monsters.js"></script>
+  <script src="data/ancient_survivors.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap');
+    body {
+      font-family: 'Assistant', sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0%, #020617 52%, #000 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+    a { word-break: break-word; }
+  </style>
+</head>
+<body>
+  <main class="max-w-7xl mx-auto px-4 py-8 md:py-14">
+    <header class="text-center mb-10">
+      <a href="index.html" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 font-bold text-sm mb-5 hover:bg-sky-500/20 transition">
+        חזרה לאנציקלופדיה
+      </a>
+      <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-blue-600 mb-4">
+        מקורות מדעיים
+      </h1>
+      <p class="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+        עמוד זה מרכז את מקורות המידע של כל הדגים במאגר. דגים ללא מקורות יסומנו כדי שנדע להשלים להם מקורות בהמשך.
+      </p>
+    </header>
+
+    <section class="max-w-3xl mx-auto mb-10">
+      <input id="search" type="text" placeholder="חיפוש לפי שם עברי או שם מדעי..." class="w-full rounded-full bg-slate-950 border-2 border-slate-800 px-6 py-4 text-lg focus:outline-none focus:border-sky-400" />
+    </section>
+
+    <section id="stats" class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"></section>
+    <section id="content" class="space-y-10"></section>
+  </main>
+
+  <script>
+    const categories = [
+      { id: 'pool', label: 'האגם המפלצתי', data: window.fishData_PoolLegends || [] },
+      { id: 'glass', label: 'מיכלי זכוכית', data: window.fishData_GlassTanks || [] },
+      { id: 'world', label: 'מפלצות עולם', data: window.fishData_WorldMonsters || [] },
+      { id: 'ancient', label: 'שורדים עתיקים', data: window.fishData_AncientSurvivors || [] }
+    ];
+
+    const allFish = categories.flatMap(category =>
+      category.data.map(fish => ({ ...fish, categoryLabel: category.label }))
+    );
+
+    function sourceTitle(url) {
+      try {
+        const host = new URL(url).hostname.replace('www.', '');
+        if (host.includes('fishbase')) return 'FishBase';
+        if (host.includes('iucnredlist')) return 'IUCN Red List';
+        if (host.includes('britannica')) return 'Britannica';
+        return host;
+      } catch {
+        return 'מקור';
+      }
+    }
+
+    function renderStats(list) {
+      const total = list.length;
+      const withSources = list.filter(f => Array.isArray(f.sources) && f.sources.length > 0).length;
+      const missing = total - withSources;
+      document.getElementById('stats').innerHTML = [
+        ['סה״כ מינים', total, 'text-sky-300'],
+        ['עם מקורות', withSources, 'text-emerald-300'],
+        ['דורשים השלמה', missing, 'text-amber-300']
+      ].map(([label, value, color]) => `
+        <div class="bg-slate-900/80 border border-slate-700 rounded-3xl p-6 text-center">
+          <div class="text-4xl font-black ${color}">${value}</div>
+          <div class="text-slate-400 font-bold mt-2">${label}</div>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      const term = document.getElementById('search').value.trim().toLowerCase();
+      const filteredCategories = categories.map(category => {
+        const data = category.data.filter(fish => {
+          if (!term) return true;
+          return String(fish.name || '').toLowerCase().includes(term) ||
+                 String(fish.scientificName || '').toLowerCase().includes(term);
+        });
+        return { ...category, data };
+      }).filter(category => category.data.length > 0);
+
+      const filteredFish = filteredCategories.flatMap(c => c.data);
+      renderStats(filteredFish);
+
+      document.getElementById('content').innerHTML = filteredCategories.map(category => `
+        <section class="bg-slate-900/70 border border-slate-700 rounded-[2rem] p-5 md:p-7 shadow-2xl">
+          <div class="flex items-center justify-between gap-4 border-b border-slate-700 pb-4 mb-5">
+            <h2 class="text-2xl md:text-3xl font-black text-white">${category.label}</h2>
+            <span class="text-slate-400 font-bold bg-slate-950 px-4 py-1 rounded-full border border-slate-800">${category.data.length} מינים</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${category.data.map(fish => {
+              const sources = Array.isArray(fish.sources) ? fish.sources.filter(Boolean) : [];
+              return `
+                <article class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5">
+                  <div class="flex gap-4 items-start">
+                    <img src="${fish.image || ''}" alt="${fish.name || ''}" class="w-20 h-20 rounded-2xl object-cover bg-slate-800" loading="lazy" />
+                    <div>
+                      <h3 class="text-xl font-black text-white">${fish.name || 'ללא שם'}</h3>
+                      <p class="text-sky-400 italic font-bold" dir="ltr">${fish.scientificName || ''}</p>
+                      <p class="text-xs text-slate-500 mt-1">IUCN: ${fish.conservation || 'N/A'}</p>
+                    </div>
+                  </div>
+                  <div class="mt-5">
+                    ${sources.length ? `
+                      <h4 class="text-sm font-black text-emerald-300 mb-2">מקורות:</h4>
+                      <ul class="space-y-2">
+                        ${sources.map(url => `
+                          <li>
+                            <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 underline underline-offset-4" dir="ltr">${sourceTitle(url)}</a>
+                            <div class="text-xs text-slate-500 mt-1" dir="ltr">${url}</div>
+                          </li>
+                        `).join('')}
+                      </ul>
+                    ` : `
+                      <div class="rounded-2xl bg-amber-500/10 border border-amber-400/20 p-4 text-amber-200 font-bold">
+                        עדיין אין מקורות לדג זה — צריך להשלים FishBase / IUCN / מקור מדעי נוסף.
+                      </div>
+                    `}
+                  </div>
+                </article>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `).join('') || `
+        <div class="text-center text-slate-400 text-2xl py-20">לא נמצאו תוצאות</div>
+      `;
+    }
+
+    document.getElementById('search').addEventListener('input', render);
+    render();
+  </script>
+</body>
+</html>
