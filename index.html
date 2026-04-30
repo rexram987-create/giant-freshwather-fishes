@@ -3,371 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ענקי המים - האנציקלופדיה המודולרית V25.2</title>
-    
-    <!-- מלכודת שגיאות גלובלית (מונעת מסך שחור ומציגה את הבעיה) -->
+    <title>ענקי המים - האנציקלופדיה המודולרית V25.3</title>
+
     <script>
         window.addEventListener('error', function(event) {
             const errorDiv = document.createElement('div');
             errorDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background-color:#7f1d1d;color:white;padding:20px;z-index:99999;overflow-y:auto;direction:ltr;font-family:monospace;';
-            errorDiv.innerHTML = '<h2 style="font-size:24px;margin-bottom:10px;">🚨 שגיאת מערכת חמורה (System Crash)</h2>' +
-                                 '<p style="font-size:16px;"><b>Message:</b> ' + event.message + '</p>' +
-                                 '<p style="font-size:14px;"><b>Source:</b> ' + event.filename + ' (Line: ' + event.lineno + ')</p>' +
-                                 '<div dir="rtl" style="margin-top:30px;font-size:20px;font-weight:bold;background:rgba(0,0,0,0.5);padding:15px;border-radius:10px;text-align:center; border: 2px solid white;">רם, המערכת תפסה את הבאג!<br/>אנא צלם לי את המסך הזה בדיוק ככה כדי שאדע מה לתקן.</div>';
+            errorDiv.innerHTML = '<h2>System Crash</h2>' + event.message;
             document.body.appendChild(errorDiv);
         });
     </script>
 
-    <!-- Core Engine -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- טעינת הנתונים מהקבצים המודולריים בתיקיית data -->
+
     <script src="data/pool_legends.js"></script>
     <script src="data/glass_tanks.js"></script>
     <script src="data/world_monsters.js"></script>
     <script src="data/ancient_survivors.js"></script>
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;600;700;800&display=swap');
-        body { 
-            font-family: 'Assistant', sans-serif; 
-            background-color: #020617; 
-            color: #f1f5f9;
-            overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .glass-card { 
-            background: rgba(15, 23, 42, 0.95); 
-            backdrop-filter: blur(20px); 
-            border: 1px solid rgba(56, 189, 248, 0.15);
-        }
-        .s25-ultra-shadow { box-shadow: 0 40px 80px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.05); }
-        .text-balance { text-wrap: balance; }
-        
-        .tab-btn { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .tab-btn.active {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: rgba(56, 189, 248, 0.5);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
-            color: #38bdf8;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
-        .animate-card { animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .animate-fade { animation: fadeIn 0.5s ease-in-out forwards; }
-        
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #020617; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
-    </style>
+    <script src="data/scientific_sources.js"></script>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
+<script type="text/babel">
+const { useState } = React;
 
-    <script type="text/babel">
-        const { useState, useMemo, useEffect, useRef } = React;
+const App = () => {
+  const [fish] = useState([
+    ...(window.fishData_PoolLegends||[]),
+    ...(window.fishData_GlassTanks||[]),
+    ...(window.fishData_WorldMonsters||[]),
+    ...(window.fishData_AncientSurvivors||[])
+  ]);
 
-        // מנגנון הגנה פנימי של React נגד קריסות
-        class ErrorBoundary extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { hasError: false, error: null, errorInfo: null };
-            }
-            static getDerivedStateFromError(error) {
-                return { hasError: true, error };
-            }
-            componentDidCatch(error, errorInfo) {
-                this.setState({ errorInfo });
-            }
-            render() {
-                if (this.state.hasError) {
-                    return (
-                        <div className="fixed inset-0 bg-red-900 text-white p-6 z-50 overflow-y-auto" dir="ltr">
-                            <h2 className="text-3xl font-bold mb-4">React Render Error 🚨</h2>
-                            <p className="text-lg font-mono bg-black/30 p-4 rounded mb-4">{this.state.error && this.state.error.toString()}</p>
-                            <pre className="text-xs font-mono whitespace-pre-wrap bg-black/50 p-4 rounded">
-                                {this.state.errorInfo && this.state.errorInfo.componentStack}
-                            </pre>
-                            <div dir="rtl" className="mt-8 p-6 bg-black/40 rounded-xl text-center border-2 border-white/20 shadow-2xl">
-                                <h3 className="text-2xl font-bold mb-2">רם, עצרנו את המסך השחור!</h3>
-                                <p className="text-lg">המערכת בודדה את הבעיה. צלם לי את המסך הזה ומיד נדע איזה קובץ עושה לנו בעיות.</p>
-                            </div>
-                        </div>
-                    );
-                }
-                return this.props.children;
-            }
-        }
+  return (
+    <div className="p-6 text-white">
+      <h1 className="text-3xl font-bold mb-6">ענקי המים</h1>
+      {fish.map(f => (
+        <div key={f.id} className="mb-6 border p-4 rounded">
+          <h2 className="text-xl font-bold">{f.name}</h2>
+          <p className="italic">{f.scientificName}</p>
+          <div className="mt-2">
+            <b>מקורות:</b>
+            <ul>
+              {(f.sources||[]).map((s,i)=>(<li key={i}><a href={s} target="_blank">{s}</a></li>))}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
 
-        const LucideIcon = ({ name, className = "w-6 h-6" }) => {
-            const iconRef = useRef(null);
-            useEffect(() => {
-                if (window.lucide && iconRef.current) {
-                    window.lucide.createIcons({
-                        root: iconRef.current,
-                        nameAttr: 'data-icon-name',
-                        attrs: { class: className }
-                    });
-                }
-            }, [name, className]);
-            return (
-                <span ref={iconRef} className="inline-flex items-center justify-center">
-                    <i data-icon-name={name} className={className}></i>
-                </span>
-            );
-        };
-
-        const FishApp = () => {
-            const [selectedFish, setSelectedFish] = useState(null);
-            const [searchTerm, setSearchTerm] = useState('');
-            const [activeTab, setActiveTab] = useState('all');
-
-            // מבנה הנתונים מחולק מראש לפי קטגוריות (למניעת עומס ויזואלי)
-            const categoriesData = useMemo(() => [
-                { id: 'pool', label: 'האגם המפלצתי', icon: 'droplets', data: window.fishData_PoolLegends || [] },
-                { id: 'glass', label: 'מיכלי זכוכית (Wet Pets)', icon: 'box', data: window.fishData_GlassTanks || [] },
-                { id: 'world', label: 'מפלצות עולם', icon: 'map', data: window.fishData_WorldMonsters || [] },
-                { id: 'ancient', label: 'שורדים עתיקים', icon: 'clock', data: window.fishData_AncientSurvivors || [] }
-            ], []);
-
-            // סינון הנתונים לפי חיפוש ולפי הלשונית הפעילה
-            const filteredCategories = useMemo(() => {
-                const term = searchTerm.toLowerCase();
-                
-                return categoriesData.map(cat => {
-                    // אם בחרנו לשונית ספציפית והיא לא הלשונית הנוכחית, נחזיר מערך ריק כדי להסתיר אותה
-                    if (activeTab !== 'all' && activeTab !== cat.id) {
-                        return { ...cat, data: [] };
-                    }
-                    
-                    // סינון הדגים בתוך הקטגוריה לפי שורת החיפוש
-                    const filteredData = cat.data.filter(f => {
-                        if (!f || !f.name) return false;
-                        if (!term) return true;
-                        
-                        const matchName = f.name.includes(term);
-                        const matchSci = f.scientificName ? f.scientificName.toLowerCase().includes(term) : false;
-                        const matchEty = f.etymology ? f.etymology.toLowerCase().includes(term) : false;
-                        
-                        return matchName || matchSci || matchEty;
-                    }).sort((a, b) => a.name.localeCompare(b.name, 'he')); // מיון אלפביתי בתוך כל קבוצה
-
-                    return { ...cat, data: filteredData };
-                }).filter(cat => cat.data.length > 0); // מציג רק קטגוריות שיש בהן תוצאות
-            }, [activeTab, searchTerm, categoriesData]);
-
-            // ספירת סך הכל דיירים
-            const totalFishes = useMemo(() => {
-                return categoriesData.reduce((acc, cat) => acc + cat.data.length, 0);
-            }, [categoriesData]);
-
-            const getStatusColor = (s) => {
-                switch(s) {
-                    case 'CR': return 'text-red-500 bg-red-500/10 border-red-500/20';
-                    case 'VU': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
-                    case 'LC': return 'text-green-500 bg-green-500/10 border-green-500/20';
-                    case 'EN': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
-                    default: return 'text-slate-400 bg-slate-400/10 border-slate-400/20';
-                }
-            };
-
-            useEffect(() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }, [selectedFish, activeTab]);
-
-            // תפריט הלשוניות
-            const tabs = [
-                { id: 'all', label: 'סקירה מלאה', icon: 'globe' },
-                ...categoriesData.map(c => ({ id: c.id, label: c.label, icon: c.icon }))
-            ];
-
-            // --------------------------------------------------------
-            // תצוגת "דף דג יחיד" (כאשר נבחר דג)
-            // --------------------------------------------------------
-            if (selectedFish) {
-                const f = selectedFish;
-                return (
-                    <div className="min-h-screen bg-[#020617] pb-24 animate-fade" dir="rtl">
-                        <div className="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-xl border-b border-slate-800/50 p-4 mb-8">
-                            <div className="max-w-4xl mx-auto flex items-center justify-between">
-                                <button onClick={() => setSelectedFish(null)} className="flex items-center gap-3 text-sky-400 bg-sky-500/10 px-6 py-3 rounded-full hover:bg-sky-500/20 transition-all font-bold border border-sky-500/20 active:scale-95">
-                                    <LucideIcon name="arrow-right" className="w-5 h-5" />
-                                    <span>חזור לגלריה הממוינת</span>
-                                </button>
-                                <span className="text-slate-500 text-sm font-bold opacity-70 hidden md:block tracking-widest">S25 ULTRA EDITION</span>
-                            </div>
-                        </div>
-
-                        <main className="max-w-4xl mx-auto px-4">
-                            <article className="glass-card rounded-[4rem] overflow-hidden s25-ultra-shadow animate-card">
-                                <div className="w-full h-[450px] md:h-[600px] bg-slate-800 relative">
-                                    <img src={f.image || ''} alt={f.name || ''} className="w-full h-full object-cover" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent"></div>
-                                    <div className="absolute top-10 left-10">
-                                        <div className={`px-5 py-2 rounded-full text-[10px] font-black border backdrop-blur-xl ${getStatusColor(f.conservation)}`}>IUCN: {f.conservation || 'N/A'}</div>
-                                    </div>
-                                </div>
-
-                                <div className="p-10 md:p-20 -mt-20 relative z-10 glass-card rounded-t-[4rem]">
-                                    <h2 className="text-5xl md:text-7xl font-extrabold text-white mb-4">{f.name}</h2>
-                                    <p className="text-sky-500 italic text-xl md:text-3xl font-bold tracking-widest mb-12">{f.scientificName}</p>
-
-                                    {f.etymology && (
-                                        <div className="mb-20 border-r-[12px] border-sky-500 bg-sky-500/5 p-10 rounded-l-3xl">
-                                            <h3 className="text-sky-400 text-xs font-black uppercase mb-4 flex items-center gap-3 tracking-widest">
-                                                פירוש ומקור השם המלא <LucideIcon name="history" className="w-5 h-5" />
-                                            </h3>
-                                            <p className="text-slate-100 text-xl md:text-2xl leading-relaxed italic font-light">{f.etymology}</p>
-                                        </div>
-                                    )}
-
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-20">
-                                        {[
-                                            { i: 'scale', l: 'גודל ומשקל', v: f.size, s: f.weight },
-                                            { i: 'calendar', l: 'תוחלת וביצים', v: f.lifespan, s: f.eggs },
-                                            { i: 'globe', l: 'מקור', v: f.origin, s: '' },
-                                            { i: 'user', l: 'מגלה ושנה', v: f.discoverer, s: f.year }
-                                        ].map((item, idx) => (
-                                            <div key={idx} className="bg-slate-900/50 p-6 rounded-[2rem] border border-slate-800 flex flex-col items-center text-center">
-                                                <LucideIcon name={item.i} className="w-6 h-6 text-sky-500 mb-4" />
-                                                <span className="text-[10px] text-slate-500 font-bold mb-2 uppercase">{item.l}</span>
-                                                <span className="text-sm md:text-lg font-black text-white">{item.v || '-'}</span>
-                                                {item.s && <span className="text-[10px] text-slate-400 mt-1">{item.s}</span>}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    <div className="space-y-24">
-                                        {/* תמיכה במפתחות החדשים והישנים למניעת שגיאות */}
-                                        <section>
-                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
-                                                ילדות ומחזור חיים <LucideIcon name="baby" className="w-8 h-8 text-yellow-500" />
-                                            </h4>
-                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light whitespace-pre-line">{f.juvenileDevelopment || f.childhood || "אין מידע זמין"}</p>
-                                        </section>
-                                        <section>
-                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
-                                                אידאולוגיה והתנהגות <LucideIcon name="shield-alert" className="w-8 h-8 text-red-500" />
-                                            </h4>
-                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light whitespace-pre-line">{f.behavioralEcology || f.behavior || "אין מידע זמין"}</p>
-                                        </section>
-                                        <section>
-                                            <h4 className="text-white font-black mb-8 flex items-center justify-end gap-4 text-2xl border-b-2 border-slate-800 pb-4">
-                                                הישגים וייחודיות <LucideIcon name="star" className="w-8 h-8 text-sky-400" />
-                                            </h4>
-                                            <p className="text-slate-300 text-lg md:text-xl leading-relaxed font-light whitespace-pre-line">{f.biologicalMilestones || f.achievements || "אין מידע זמין"}</p>
-                                        </section>
-                                    </div>
-                                </div>
-                            </article>
-                        </main>
-                    </div>
-                );
-            }
-
-            // --------------------------------------------------------
-            // תצוגת דף הבית (הגלריה המחולקת לקטגוריות)
-            // --------------------------------------------------------
-            return (
-                <div className="min-h-screen bg-[#020617] pb-24 animate-fade" dir="rtl">
-                    <header className="max-w-6xl mx-auto pt-16 text-center px-6">
-                        <LucideIcon name="waves" className="w-12 h-12 text-sky-500 mb-6 mx-auto opacity-80" />
-                        <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-400 to-blue-600 mb-4 tracking-tighter drop-shadow-2xl">ענקי המים</h1>
-                        <p className="text-slate-400 text-xl font-light italic mb-8">האנציקלופדיה המודולרית • סה"כ {totalFishes} מינים מתועדים</p>
-                        
-                        {/* שורת חיפוש חופשי */}
-                        <div className="relative max-w-xl mx-auto group mb-10">
-                            <input 
-                                type="text" 
-                                placeholder="חיפוש לפי שם, סוג, או מידע אטימולוגי..." 
-                                className="w-full bg-[#0f172a] border-2 border-slate-800 rounded-full py-4 pr-12 pl-6 focus:border-sky-500 focus:outline-none transition-all text-xl shadow-xl" 
-                                value={searchTerm} 
-                                onChange={(e) => setSearchTerm(e.target.value)} 
-                            />
-                            <LucideIcon name="search" className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 w-6 h-6" />
-                        </div>
-
-                        {/* תפריט סינון */}
-                        <div className="flex flex-wrap justify-center gap-2 mb-16">
-                            {tabs.map(t => (
-                                <button 
-                                    key={t.id} 
-                                    onClick={() => { setActiveTab(t.id); setSearchTerm(''); }} 
-                                    className={`tab-btn flex items-center gap-2 px-6 py-3 rounded-full border-2 text-sm font-bold ${activeTab === t.id ? 'active' : 'border-slate-800 bg-slate-900/50 text-slate-400 hover:text-white'}`}>
-                                    <LucideIcon name={t.icon} className="w-4 h-4" />
-                                    {t.label}
-                                </button>
-                            ))}
-                        </div>
-                    </header>
-
-                    {/* תצוגת הקטגוריות השונות (למניעת עומס ויזואלי) */}
-                    <div className="space-y-24">
-                        {filteredCategories.length > 0 ? (
-                            filteredCategories.map((category, catIndex) => (
-                                <section key={category.id} className="max-w-7xl mx-auto px-6">
-                                    
-                                    {/* כותרת מפרידה לכל קטגוריה (מוצגת תמיד כשמחפשים או כשהלשונית על 'הכל') */}
-                                    <div className="flex items-center gap-4 mb-8 border-b-2 border-slate-800 pb-4 ml-4">
-                                        <div className="bg-sky-500/10 p-3 rounded-2xl border border-sky-500/20">
-                                            <LucideIcon name={category.icon} className="w-6 h-6 md:w-8 md:h-8 text-sky-400" />
-                                        </div>
-                                        <h2 className="text-2xl md:text-4xl font-black text-white">{category.label}</h2>
-                                        <span className="mr-auto text-slate-500 font-bold bg-slate-900/50 px-4 py-1 rounded-full text-sm border border-slate-800 hidden sm:block">
-                                            {category.data.length} דיירים
-                                        </span>
-                                    </div>
-                                    
-                                    {/* רשת הדגים הרלוונטיים לקטגוריה זו */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                        {category.data.map((fish, i) => (
-                                            <div 
-                                                key={fish.id || i} 
-                                                onClick={() => setSelectedFish(fish)} 
-                                                className="glass-card rounded-[2rem] overflow-hidden cursor-pointer hover:-translate-y-2 hover:border-sky-500/50 transition-all duration-500 animate-card group" 
-                                                style={{ animationDelay: `${i * 0.05}s` }}
-                                            >
-                                                <div className="h-56 overflow-hidden bg-slate-800 relative">
-                                                    <img src={fish.image || ''} alt={fish.name || ''} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent to-transparent opacity-80"></div>
-                                                </div>
-                                                <div className="p-6 text-right relative bg-gradient-to-b from-[#0f172a] to-[#020617]">
-                                                    <h3 className="text-xl font-bold text-white mb-1">{fish.name}</h3>
-                                                    <p className="text-xs text-sky-500/70 italic font-bold mb-4" dir="ltr">{fish.scientificName}</p>
-                                                    <div className={`inline-block px-3 py-1 rounded-full text-[9px] font-black border ${getStatusColor(fish.conservation)}`}>
-                                                        {fish.conservation || 'N/A'}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </section>
-                            ))
-                        ) : (
-                            <div className="text-center text-slate-500 py-20 text-2xl font-light">
-                                <LucideIcon name="search-x" className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                                מצטערים, לא נמצאו מפלצות העונות לחיפוש זה...
-                            </div>
-                        )}
-                    </div>
-
-                    <footer className="max-w-4xl mx-auto mt-40 text-center border-t border-slate-900 pt-10 pb-20 opacity-40">
-                        <p className="text-[10px] font-black tracking-[0.5em] uppercase">V25.2 MODULAR CATEGORIES • S25 ULTRA OPTIMIZED</p>
-                    </footer>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(
-            <ErrorBoundary>
-                <FishApp />
-            </ErrorBoundary>
-        );
-    </script>
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
 </body>
 </html>
