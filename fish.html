@@ -1,158 +1,61 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>דף דג - ענקי המים</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="data/pool_legends.js"></script>
-  <script src="data/glass_tanks.js"></script>
-  <script src="data/world_monsters.js"></script>
-  <script src="data/ancient_survivors.js"></script>
-  <script src="data/scientific_sources.js"></script>
-  <script src="data/taxonomy.js"></script>
-  <script src="data/encyclopedia_fields.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap');
-    body { font-family: 'Assistant', sans-serif; background: radial-gradient(circle at top, #0f172a 0%, #020617 55%, #000 100%); color:#f8fafc; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>דף דג</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="data/pool_legends.js"></script>
+<script src="data/glass_tanks.js"></script>
+<script src="data/world_monsters.js"></script>
+<script src="data/ancient_survivors.js"></script>
+<script src="data/fish_filters.js"></script>
+<script src="data/scientific_sources.js"></script>
+<script src="data/taxonomy.js"></script>
+<script src="data/encyclopedia_fields.js"></script>
+<script src="data/discoverers.js"></script>
 </head>
-<body>
-  <main id="app" class="max-w-6xl mx-auto px-4 py-8 md:py-12"></main>
+<body class="bg-slate-950 text-white">
+
+<div id="app" class="max-w-5xl mx-auto p-6"></div>
+
+<div id="modal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+  <img id="modalImg" class="max-w-full max-h-full rounded-xl" />
+</div>
 
 <script>
-const categories = [
-  { label: 'האגם המפלצתי', data: window.fishData_PoolLegends || [] },
-  { label: 'מיכלי זכוכית', data: window.fishData_GlassTanks || [] },
-  { label: 'מפלצות עולם', data: window.fishData_WorldMonsters || [] },
-  { label: 'שורדים עתיקים', data: window.fishData_AncientSurvivors || [] }
-];
-const allFish = categories.flatMap(cat => cat.data.map(f => ({...f, categoryLabel: cat.label})));
-const params = new URLSearchParams(window.location.search);
-const id = params.get('id');
-const fish = allFish.find(f => String(f.id) === String(id)) || allFish[0];
+const fish=[...(window.fishData_PoolLegends||[]),...(window.fishData_GlassTanks||[]),...(window.fishData_WorldMonsters||[]),...(window.fishData_AncientSurvivors||[])];
+const params=new URLSearchParams(location.search);
+const f=fish.find(x=>String(x.id)===params.get('id'))||fish[0];
 
-function safe(value) {
-  return String(value || '').replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
-}
-function sourceLabel(url) {
-  const lower = String(url || '').toLowerCase();
-  if (lower.includes('fishbase')) return 'FishBase';
-  if (lower.includes('iucn')) return 'IUCN';
-  if (lower.includes('britannica')) return 'Britannica';
-  return 'מקור';
-}
-function relatedByFamily(f) {
-  const family = f.taxonomy && f.taxonomy.family;
-  if (!family) return [];
-  return allFish.filter(other => other.id !== f.id && other.taxonomy && other.taxonomy.family === family).slice(0, 8);
-}
-function relatedByOrder(f) {
-  const order = f.taxonomy && f.taxonomy.order;
-  const family = f.taxonomy && f.taxonomy.family;
-  if (!order) return [];
-  return allFish.filter(other => other.id !== f.id && other.taxonomy && other.taxonomy.order === order && other.taxonomy.family !== family).slice(0, 8);
-}
-function section(title, content, icon) {
-  return `
-    <section class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 md:p-6">
-      <h2 class="text-xl md:text-2xl font-black text-sky-300 mb-3">${icon} ${title}</h2>
-      <p class="text-slate-300 leading-relaxed text-lg whitespace-pre-line">${safe(content || 'מידע להשלים')}</p>
-    </section>
-  `;
-}
-function pillLink(f) {
-  return `<a href="fish.html?id=${encodeURIComponent(f.id)}" class="inline-flex px-3 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-sm font-bold hover:bg-sky-500/20">${safe(f.name)}</a>`;
+function openModal(src){
+ document.getElementById('modalImg').src=src;
+ document.getElementById('modal').classList.remove('hidden');
 }
 
-function render() {
-  const f = fish;
-  const profile = f.encyclopediaProfile || {};
-  const taxonomy = f.taxonomy || {};
-  const sources = Array.isArray(f.sources) ? f.sources : [];
-  const sameFamily = relatedByFamily(f);
-  const sameOrder = relatedByOrder(f);
+document.getElementById('modal').onclick=()=>document.getElementById('modal').classList.add('hidden');
 
-  document.title = `${f.name || 'דף דג'} - ענקי המים`;
-  document.getElementById('app').innerHTML = `
-    <nav class="flex flex-wrap gap-3 mb-8">
-      <a href="index.html" class="px-5 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 font-bold hover:bg-sky-500/20">חזרה לאינדקס</a>
-      <a href="admin.html" class="px-5 py-2 rounded-full bg-purple-500/10 border border-purple-400/20 text-purple-300 font-bold hover:bg-purple-500/20">מערכת ניהול</a>
-      <a href="sources.html" class="px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 font-bold hover:bg-emerald-500/20">מקורות</a>
-      <a href="related.html" class="px-5 py-2 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-300 font-bold hover:bg-amber-500/20">קשרים</a>
-    </nav>
+const p=f.encyclopediaProfile||{};
 
-    <article class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-[2.5rem] overflow-hidden shadow-2xl mb-8">
-      <div class="relative h-[320px] md:h-[460px] bg-slate-800">
-        <img src="${safe(f.image)}" alt="${safe(f.name)}" class="w-full h-full object-cover" onerror="this.style.display='none'" />
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent"></div>
-        <div class="absolute bottom-0 right-0 left-0 p-6 md:p-10">
-          <div class="flex flex-wrap gap-2 mb-4">
-            <span class="px-4 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-200 font-black text-sm">${safe(f.categoryLabel)}</span>
-            <span class="px-4 py-1 rounded-full bg-slate-900/80 border border-slate-700 text-slate-200 font-black text-sm">IUCN: ${safe(f.conservation || 'N/A')}</span>
-          </div>
-          <h1 class="text-4xl md:text-7xl font-black text-white mb-2">${safe(f.name)}</h1>
-          <p class="text-2xl md:text-4xl italic text-sky-300 font-bold" dir="ltr">${safe(f.scientificName)}</p>
-        </div>
-      </div>
+document.getElementById('app').innerHTML=`
+<a href="index.html" class="text-sky-400">← חזרה</a>
 
-      <div class="p-5 md:p-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 text-center"><div class="text-slate-500 font-black text-xs mb-1">סדרה</div><div class="text-sky-300 font-black" dir="ltr">${safe(taxonomy.order || 'להשלים')}</div></div>
-        <div class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 text-center"><div class="text-slate-500 font-black text-xs mb-1">משפחה</div><div class="text-sky-300 font-black" dir="ltr">${safe(taxonomy.family || 'להשלים')}</div></div>
-        <div class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 text-center"><div class="text-slate-500 font-black text-xs mb-1">מידות</div><div class="text-white font-black">${safe(f.size || 'להשלים')}</div></div>
-        <div class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 text-center"><div class="text-slate-500 font-black text-xs mb-1">משקל</div><div class="text-white font-black">${safe(f.weight || 'להשלים')}</div></div>
-      </div>
-    </article>
+<h1 class="text-4xl font-black mt-4 mb-2">${f.name}</h1>
+<p class="italic text-sky-400 mb-4">${f.scientificName}</p>
 
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-      <div class="lg:col-span-2 space-y-6">
-        ${section('1. אטימולוגיה מלאה ומפורקת', profile.etymologyFull || f.etymology, '🧬')}
-        ${section('2. מידע על המגלה / המתאר המדעי', profile.discovererDetails || f.discovererDetails, '👨‍🔬')}
-        ${section('3. שנת הגילוי / התיאור המדעי', profile.discoveryYear || f.year, '📅')}
-        ${section('4. מיקום הגילוי', profile.discoveryLocation || f.discoveryLocation || f.origin, '📍')}
-        ${section('5. נסיבות הגילוי', profile.discoveryCircumstances || f.discoveryCircumstances, '🧭')}
-        ${section('6. מידות ומשקל', profile.measurements || `${f.size || 'להשלים'} / ${f.weight || 'להשלים'}`, '📏')}
-        ${section('7. תזונה', profile.diet || f.diet, '🍽️')}
-        ${section('ילדות ומחזור חיים', f.juvenileDevelopment || f.childhood, '🐣')}
-        ${section('התנהגות ואקולוגיה', f.behavioralEcology || f.behavior, '🌊')}
-        ${section('הישגים וייחודיות', f.biologicalMilestones || f.achievements, '⭐')}
-      </div>
+<img src="${f.image}" onclick="openModal('${f.image}')" class="w-full rounded-xl cursor-zoom-in mb-6" />
 
-      <aside class="space-y-6">
-        <section class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 md:p-6">
-          <h2 class="text-xl font-black text-sky-300 mb-4">🧬 סיווג טקסונומי</h2>
-          <div class="space-y-3 text-slate-300">
-            <div><b class="text-white">ממלכה:</b> Animalia</div>
-            <div><b class="text-white">מערכה:</b> Chordata</div>
-            <div><b class="text-white">מחלקה:</b> ${safe(taxonomy.className || 'להשלים')}</div>
-            <div><b class="text-white">סדרה:</b> <span dir="ltr">${safe(taxonomy.order || 'להשלים')}</span></div>
-            <div><b class="text-white">משפחה:</b> <span dir="ltr">${safe(taxonomy.family || 'להשלים')}</span></div>
-            <div><b class="text-white">משפחה בעברית:</b> ${safe(taxonomy.hebrewFamily || 'להשלים')}</div>
-            <div><b class="text-white">סוג:</b> <span dir="ltr">${safe(taxonomy.genus || 'להשלים')}</span></div>
-          </div>
-        </section>
-
-        <section class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 md:p-6">
-          <h2 class="text-xl font-black text-sky-300 mb-4">📚 מקורות מדעיים</h2>
-          <div class="flex flex-wrap gap-2">
-            ${sources.length ? sources.map(s => `<a href="${safe(s)}" target="_blank" rel="noopener noreferrer" class="px-3 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-sm font-bold hover:bg-sky-500/20">${sourceLabel(s)}</a>`).join('') : '<span class="text-amber-300 font-bold">מקורות להשלים</span>'}
-          </div>
-        </section>
-
-        <section class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 md:p-6">
-          <h2 class="text-xl font-black text-emerald-300 mb-4">קרובים מאותה משפחה</h2>
-          <div class="flex flex-wrap gap-2">${sameFamily.length ? sameFamily.map(pillLink).join('') : '<p class="text-slate-500">אין עדיין מינים נוספים מאותה משפחה.</p>'}</div>
-        </section>
-
-        <section class="bg-slate-950/70 border border-slate-800 rounded-3xl p-5 md:p-6">
-          <h2 class="text-xl font-black text-amber-300 mb-4">קרובים מאותה סדרה</h2>
-          <div class="flex flex-wrap gap-2">${sameOrder.length ? sameOrder.map(pillLink).join('') : '<p class="text-slate-500">אין עדיין מינים נוספים מאותה סדרה.</p>'}</div>
-        </section>
-      </aside>
-    </section>
-  `;
-}
-render();
+<div class="space-y-6 text-lg">
+<div><b>אטימולוגיה:</b> ${p.etymologyFull}</div>
+<div><b>מגלה:</b> ${p.discovererDetails}</div>
+<div><b>שנה:</b> ${p.discoveryYear}</div>
+<div><b>מיקום גילוי:</b> ${p.discoveryLocation}</div>
+<div><b>נסיבות גילוי:</b> ${p.discoveryCircumstances}</div>
+<div><b>מידות:</b> ${p.measurements}</div>
+<div><b>תזונה:</b> ${p.diet}</div>
+</div>
+`;
 </script>
+
 </body>
 </html>
