@@ -12,142 +12,31 @@
   <script src="data/scientific_sources.js"></script>
   <script src="data/taxonomy.js"></script>
   <script src="data/encyclopedia_fields.js"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap');
-    body { font-family: 'Assistant', sans-serif; background: radial-gradient(circle at top, #0f172a 0%, #020617 55%, #000 100%); color:#f8fafc; }
-    .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-  </style>
 </head>
-<body>
-  <main class="max-w-7xl mx-auto px-4 py-8 md:py-14">
-    <header class="text-center mb-10">
-      <h1 class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-blue-600 mb-4">ענקי המים</h1>
-      <p class="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
-        אנציקלופדיה מדעית לדגי ענק, שורדים קדומים ומפלצות מים מתוקים — עם אטימולוגיה, גילוי, סיווג, מידות, תזונה ומקורות.
-      </p>
-      <div class="flex flex-wrap justify-center gap-3 mt-6">
-        <a href="admin.html" class="px-5 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 font-bold hover:bg-sky-500/20">מערכת ניהול</a>
-        <a href="sources.html" class="px-5 py-2 rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 font-bold hover:bg-emerald-500/20">מקורות</a>
-        <a href="related.html" class="px-5 py-2 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-300 font-bold hover:bg-amber-500/20">קשרים בין דגים</a>
-      </div>
-    </header>
-
-    <section class="max-w-3xl mx-auto mb-10">
-      <input id="search" type="text" placeholder="חיפוש לפי שם, שם מדעי, משפחה, תזונה או אזור..." class="w-full rounded-full bg-slate-950 border-2 border-slate-800 px-6 py-4 text-lg focus:outline-none focus:border-sky-400" />
-    </section>
-
-    <section id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10"></section>
-    <section id="fishList" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></section>
-  </main>
-
+<body class="bg-slate-950 text-white">
+<div class="max-w-6xl mx-auto p-6">
+<h1 class="text-4xl font-black mb-8 text-center text-sky-400">ענקי המים</h1>
+<div id="fishList" class="grid md:grid-cols-2 gap-6"></div>
+</div>
 <script>
-const categories = [
-  { label: 'האגם המפלצתי', data: window.fishData_PoolLegends || [] },
-  { label: 'מיכלי זכוכית', data: window.fishData_GlassTanks || [] },
-  { label: 'מפלצות עולם', data: window.fishData_WorldMonsters || [] },
-  { label: 'שורדים עתיקים', data: window.fishData_AncientSurvivors || [] }
+const fish = [
+...(window.fishData_PoolLegends||[]),
+...(window.fishData_GlassTanks||[]),
+...(window.fishData_WorldMonsters||[]),
+...(window.fishData_AncientSurvivors||[])
 ];
-const fish = categories.flatMap(cat => cat.data.map(f => ({ ...f, categoryLabel: cat.label })));
-
-function safe(value) {
-  return String(value || '').replace(/[&<>"]/g, ch => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[ch]));
-}
-
-function sourceLabel(url) {
-  const lower = String(url || '').toLowerCase();
-  if (lower.includes('fishbase')) return 'FishBase';
-  if (lower.includes('iucn')) return 'IUCN';
-  if (lower.includes('britannica')) return 'Britannica';
-  return 'מקור';
-}
-
-function short(text, fallback='מידע להשלים') {
-  const value = String(text || '').trim();
-  return value || fallback;
-}
-
-function renderStats(list) {
-  const withFullProfile = list.filter(f => f.encyclopediaProfile).length;
-  const withSources = list.filter(f => Array.isArray(f.sources) && f.sources.length > 0).length;
-  const families = new Set(list.map(f => f.taxonomy && f.taxonomy.family).filter(Boolean)).size;
-  document.getElementById('stats').innerHTML = [
-    ['מינים', list.length, 'text-sky-300'],
-    ['פרופיל מלא', withFullProfile, 'text-emerald-300'],
-    ['עם מקורות', withSources, 'text-amber-300'],
-    ['משפחות', families, 'text-purple-300']
-  ].map(([label, value, color]) => `
-    <div class="bg-slate-900/80 border border-slate-700 rounded-3xl p-5 text-center">
-      <div class="text-3xl font-black ${color}">${value}</div>
-      <div class="text-slate-400 font-bold mt-1">${label}</div>
-    </div>
-  `).join('');
-}
-
-function card(f) {
-  const profile = f.encyclopediaProfile || {};
-  const taxonomy = f.taxonomy || {};
-  const sources = Array.isArray(f.sources) ? f.sources : [];
-  return `
-    <article class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-[2rem] overflow-hidden shadow-2xl">
-      <div class="grid grid-cols-1 md:grid-cols-[180px_1fr]">
-        <div class="h-56 md:h-full bg-slate-800">
-          <img src="${safe(f.image)}" alt="${safe(f.name)}" class="w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'" />
-        </div>
-        <div class="p-5 md:p-6">
-          <div class="flex flex-wrap gap-2 mb-3">
-            <span class="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-xs font-black">${safe(f.categoryLabel)}</span>
-            <span class="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-black">IUCN: ${safe(f.conservation || 'N/A')}</span>
-          </div>
-          <h2 class="text-2xl md:text-3xl font-black text-white mb-1">${safe(f.name)}</h2>
-          <p class="italic text-sky-400 font-bold mb-4" dir="ltr">${safe(f.scientificName)}</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5 text-sm">
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3"><b class="text-sky-300">סיווג:</b><br><span dir="ltr">${safe(taxonomy.order || 'להשלים')} → ${safe(taxonomy.family || 'להשלים')}</span></div>
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3"><b class="text-sky-300">מידות ומשקל:</b><br>${safe(profile.measurements || `${short(f.size)} / ${short(f.weight)}`)}</div>
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3"><b class="text-sky-300">שנת גילוי:</b><br>${safe(profile.discoveryYear || f.year || 'להשלים')}</div>
-            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3"><b class="text-sky-300">תזונה:</b><br>${safe(profile.diet || f.diet || 'להשלים')}</div>
-          </div>
-
-          <details class="group bg-slate-950/60 border border-slate-800 rounded-2xl p-4 mb-3" open>
-            <summary class="cursor-pointer text-lg font-black text-white">📖 מידע אנציקלופדי</summary>
-            <div class="mt-4 space-y-4 text-slate-300 leading-relaxed">
-              <section><h3 class="font-black text-sky-300 mb-1">1. אטימולוגיה מלאה ומפורקת</h3><p class="line-clamp-4">${safe(profile.etymologyFull || f.etymology || 'להשלים')}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">2. מידע על המגלה / המתאר</h3><p>${safe(profile.discovererDetails || f.discovererDetails || 'להשלים')}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">3. שנת הגילוי / התיאור</h3><p>${safe(profile.discoveryYear || f.year || 'להשלים')}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">4. מיקום הגילוי</h3><p>${safe(profile.discoveryLocation || f.discoveryLocation || f.origin || 'להשלים')}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">5. נסיבות הגילוי</h3><p class="line-clamp-4">${safe(profile.discoveryCircumstances || f.discoveryCircumstances || 'להשלים')}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">6. מידות ומשקל</h3><p>${safe(profile.measurements || `${short(f.size)} / ${short(f.weight)}`)}</p></section>
-              <section><h3 class="font-black text-sky-300 mb-1">7. תזונה</h3><p>${safe(profile.diet || f.diet || 'להשלים')}</p></section>
-            </div>
-          </details>
-
-          <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4">
-            <h3 class="font-black text-white mb-3">📚 מקורות מדעיים</h3>
-            <div class="flex flex-wrap gap-2">
-              ${sources.length ? sources.map(s => `<a href="${safe(s)}" target="_blank" rel="noopener noreferrer" class="px-3 py-1 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-sm font-bold hover:bg-sky-500/20">${sourceLabel(s)}</a>`).join('') : '<span class="text-amber-300 font-bold">מקורות להשלים</span>'}
-            </div>
-          </div>
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-function render() {
-  const term = document.getElementById('search').value.trim().toLowerCase();
-  const filtered = fish.filter(f => {
-    if (!term) return true;
-    const profile = f.encyclopediaProfile || {};
-    const taxonomy = f.taxonomy || {};
-    return [f.name, f.scientificName, f.origin, f.diet, taxonomy.family, taxonomy.order, taxonomy.hebrewFamily, profile.etymologyFull]
-      .some(value => String(value || '').toLowerCase().includes(term));
-  });
-  renderStats(filtered);
-  document.getElementById('fishList').innerHTML = filtered.map(card).join('') || '<div class="text-center text-slate-400 text-2xl py-20">לא נמצאו תוצאות</div>';
-}
-
-document.getElementById('search').addEventListener('input', render);
-render();
+const container = document.getElementById('fishList');
+fish.forEach(f=>{
+const el = document.createElement('a');
+el.href = `fish.html?id=${f.id}`;
+el.className = 'block bg-slate-900 p-4 rounded-2xl border border-slate-800 hover:bg-slate-800 transition';
+el.innerHTML = `
+<h2 class="text-xl font-bold">${f.name}</h2>
+<p class="italic text-sky-400">${f.scientificName}</p>
+<p class="text-sm text-slate-400 mt-2">לחץ לערך מלא →</p>
+`;
+container.appendChild(el);
+});
 </script>
 </body>
 </html>
