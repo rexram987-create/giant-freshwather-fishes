@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מערכת ניהול - ענקי המים</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="data/pool_legends.js"></script>
+  <script src="data/glass_tanks.js"></script>
+  <script src="data/world_monsters.js"></script>
+  <script src="data/ancient_survivors.js"></script>
+  <script src="data/scientific_sources.js"></script>
+  <script src="data/taxonomy.js"></script>
+  <script src="data/encyclopedia_fields.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap');
+    body { font-family: 'Assistant', sans-serif; background:#020617; color:#f8fafc; }
+    input, textarea, select { direction: rtl; }
+    pre { direction:ltr; text-align:left; white-space:pre-wrap; word-break:break-word; }
+  </style>
+</head>
+<body>
+  <main class="max-w-7xl mx-auto px-4 py-8">
+    <header class="text-center mb-8">
+      <div class="flex flex-wrap justify-center gap-3 mb-5">
+        <a href="index.html" class="px-4 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 font-bold hover:bg-sky-500/20">לאתר הראשי</a>
+        <a href="sources.html" class="px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-400/20 text-emerald-300 font-bold hover:bg-emerald-500/20">מקורות</a>
+        <a href="related.html" class="px-4 py-2 rounded-full bg-amber-500/10 border border-amber-400/20 text-amber-300 font-bold hover:bg-amber-500/20">קשרים בין דגים</a>
+      </div>
+      <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-blue-600 mb-3">מערכת ניהול דגים</h1>
+      <p class="text-slate-300 text-lg max-w-3xl mx-auto">בחר דג קיים לעריכה או צור דג חדש. בסוף תקבל בלוק קוד מוכן להדבקה בקובץ הנתונים המתאים.</p>
+    </header>
+
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <aside class="lg:col-span-4 bg-slate-900/80 border border-slate-700 rounded-3xl p-5 shadow-2xl">
+        <h2 class="text-2xl font-black text-sky-300 mb-4">בחירת דג</h2>
+        <label class="block mb-4">
+          <span class="block text-sm font-bold text-slate-300 mb-2">חיפוש</span>
+          <input id="searchFish" placeholder="שם עברי או מדעי..." class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" />
+        </label>
+        <label class="block mb-4">
+          <span class="block text-sm font-bold text-slate-300 mb-2">קטגוריה לייצוא</span>
+          <select id="targetCategory" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400">
+            <option value="pool">האגם המפלצתי - data/pool_legends.js</option>
+            <option value="glass">מיכלי זכוכית - data/glass_tanks.js</option>
+            <option value="world">מפלצות עולם - data/world_monsters.js</option>
+            <option value="ancient">שורדים עתיקים - data/ancient_survivors.js</option>
+          </select>
+        </label>
+        <button id="newFishBtn" class="w-full rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-3 mb-4">+ דג חדש</button>
+        <div id="fishList" class="space-y-2 max-h-[620px] overflow-auto pr-1"></div>
+      </aside>
+
+      <section class="lg:col-span-5 bg-slate-900/80 border border-slate-700 rounded-3xl p-5 shadow-2xl">
+        <h2 class="text-2xl font-black text-sky-300 mb-4">עריכת פרטים</h2>
+        <form id="fishForm" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">ID</span><input id="id" type="number" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">IUCN</span><select id="conservation" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"><option>LC</option><option>NT</option><option>VU</option><option>EN</option><option>CR</option><option>DD</option><option>NE</option></select></label>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">שם בעברית</span><input id="name" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">שם מדעי</span><input id="scientificName" dir="ltr" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">תמונה</span><input id="image" dir="ltr" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">גודל</span><input id="size" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">משקל</span><input id="weight" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">תוחלת חיים</span><input id="lifespan" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">מוצא / תפוצה</span><input id="origin" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">מגלה / מתאר</span><input id="discoverer" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">שנה</span><input id="year" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">מיקום גילוי</span><input id="discoveryLocation" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">ביצים / צאצאים</span><input id="eggs" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">אטימולוגיה</span><textarea id="etymology" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">מידע על המגלה</span><textarea id="discovererDetails" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">נסיבות הגילוי</span><textarea id="discoveryCircumstances" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">ילדות ומחזור חיים</span><textarea id="childhood" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">התנהגות</span><textarea id="behavior" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">הישגים וייחודיות</span><textarea id="achievements" rows="3" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">תזונה</span><input id="diet" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">שיטת ציד</span><input id="hunting" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">רבייה</span><input id="reproduction" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">סדרה</span><input id="taxonomyOrder" dir="ltr" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">משפחה</span><input id="taxonomyFamily" dir="ltr" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+            <label><span class="block text-sm font-bold text-slate-300 mb-2">משפחה בעברית</span><input id="taxonomyHebrewFamily" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3" /></label>
+          </div>
+
+          <label><span class="block text-sm font-bold text-slate-300 mb-2">מקורות - שורה אחת לכל קישור</span><textarea id="sources" rows="4" dir="ltr" class="field w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3"></textarea></label>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button type="button" id="generateBtn" class="flex-1 rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-4">צור קוד</button>
+            <button type="button" id="saveLocalBtn" class="flex-1 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4">שמור מקומית בדפדפן</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="lg:col-span-3 space-y-6">
+        <div class="bg-slate-900/80 border border-slate-700 rounded-3xl p-5 shadow-2xl">
+          <h2 class="text-2xl font-black text-sky-300 mb-4">תצוגה מקדימה</h2>
+          <div id="preview" class="space-y-3"></div>
+        </div>
+        <div class="bg-slate-900/80 border border-slate-700 rounded-3xl p-5 shadow-2xl">
+          <h2 class="text-2xl font-black text-sky-300 mb-4">קוד להדבקה</h2>
+          <pre id="output" class="min-h-[320px] bg-black/60 border border-slate-800 rounded-2xl p-4 text-xs text-slate-200 overflow-auto">כאן יופיע הקוד...</pre>
+          <button id="copyBtn" class="mt-4 w-full rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-4">העתק קוד</button>
+          <div id="status" class="hidden mt-3 text-center text-emerald-300 font-bold">הועתק / נשמר!</div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const categoryMap = {
+      pool: { label: 'האגם המפלצתי', file: 'data/pool_legends.js', data: window.fishData_PoolLegends || [] },
+      glass: { label: 'מיכלי זכוכית', file: 'data/glass_tanks.js', data: window.fishData_GlassTanks || [] },
+      world: { label: 'מפלצות עולם', file: 'data/world_monsters.js', data: window.fishData_WorldMonsters || [] },
+      ancient: { label: 'שורדים עתיקים', file: 'data/ancient_survivors.js', data: window.fishData_AncientSurvivors || [] }
+    };
+    const allFish = Object.entries(categoryMap).flatMap(([category, obj]) => obj.data.map(f => ({...f, _category: category, _categoryLabel: obj.label})));
+    const fieldIds = ['id','name','scientificName','image','etymology','discovererDetails','discoveryLocation','discoveryCircumstances','childhood','behavior','achievements','size','weight','lifespan','origin','discoverer','year','eggs','conservation','diet','hunting','reproduction','taxonomyOrder','taxonomyFamily','taxonomyHebrewFamily','sources'];
+
+    function $(id){ return document.getElementById(id); }
+    function esc(v){ return String(v || '').replace(/`/g, '\\`').trim(); }
+    function q(v){ return '`' + esc(v) + '`'; }
+    function showStatus(){ $('status').classList.remove('hidden'); setTimeout(()=>$('status').classList.add('hidden'),1600); }
+
+    function setForm(fish = {}) {
+      $('id').value = fish.id || nextId();
+      $('name').value = fish.name || '';
+      $('scientificName').value = fish.scientificName || '';
+      $('image').value = fish.image || '';
+      $('etymology').value = fish.etymology || '';
+      $('discovererDetails').value = fish.discovererDetails || (fish.encyclopediaProfile && fish.encyclopediaProfile.discovererDetails) || '';
+      $('discoveryLocation').value = fish.discoveryLocation || '';
+      $('discoveryCircumstances').value = fish.discoveryCircumstances || '';
+      $('childhood').value = fish.childhood || fish.juvenileDevelopment || '';
+      $('behavior').value = fish.behavior || fish.behavioralEcology || '';
+      $('achievements').value = fish.achievements || fish.biologicalMilestones || '';
+      $('size').value = fish.size || '';
+      $('weight').value = fish.weight || '';
+      $('lifespan').value = fish.lifespan || '';
+      $('origin').value = fish.origin || '';
+      $('discoverer').value = fish.discoverer || '';
+      $('year').value = fish.year || '';
+      $('eggs').value = fish.eggs || '';
+      $('conservation').value = fish.conservation || 'NE';
+      $('diet').value = fish.diet || '';
+      $('hunting').value = fish.hunting || '';
+      $('reproduction').value = fish.reproduction || '';
+      $('taxonomyOrder').value = fish.taxonomy?.order || '';
+      $('taxonomyFamily').value = fish.taxonomy?.family || '';
+      $('taxonomyHebrewFamily').value = fish.taxonomy?.hebrewFamily || '';
+      $('sources').value = Array.isArray(fish.sources) ? fish.sources.join('\n') : '';
+      if (fish._category) $('targetCategory').value = fish._category;
+      updatePreview();
+    }
+
+    function getForm() {
+      const f = {};
+      fieldIds.forEach(id => f[id] = $(id).value.trim());
+      f.sources = f.sources.split('\n').map(s=>s.trim()).filter(Boolean);
+      return f;
+    }
+
+    function nextId() {
+      return Math.max(0, ...allFish.map(f => Number(f.id) || 0)) + 1;
+    }
+
+    function renderFishList() {
+      const term = $('searchFish').value.toLowerCase();
+      const list = allFish.filter(f => !term || String(f.name).toLowerCase().includes(term) || String(f.scientificName).toLowerCase().includes(term));
+      $('fishList').innerHTML = list.map((f, index) => `
+        <button class="fishPick w-full text-right p-3 rounded-2xl bg-slate-950 hover:bg-slate-800 border border-slate-800 transition" data-id="${f.id}">
+          <div class="font-black text-white">${f.name || 'ללא שם'}</div>
+          <div class="text-xs text-sky-400 italic" dir="ltr">${f.scientificName || ''}</div>
+          <div class="text-xs text-slate-500 mt-1">${f._categoryLabel}</div>
+        </button>
+      `).join('');
+      document.querySelectorAll('.fishPick').forEach(btn => btn.addEventListener('click', () => {
+        const selected = allFish.find(f => String(f.id) === String(btn.dataset.id));
+        setForm(selected);
+      }));
+    }
+
+    function updatePreview() {
+      const f = getForm();
+      $('preview').innerHTML = `
+        <img src="${f.image}" onerror="this.style.display='none'" class="w-full h-48 object-cover rounded-2xl bg-slate-800 mb-3" />
+        <h3 class="text-2xl font-black">${f.name || 'שם הדג'}</h3>
+        <p class="text-sky-400 italic font-bold" dir="ltr">${f.scientificName || 'Scientific name'}</p>
+        <div class="mt-3 text-sm text-slate-300 space-y-1">
+          <div><b>גודל:</b> ${f.size || '-'}</div>
+          <div><b>משקל:</b> ${f.weight || '-'}</div>
+          <div><b>תזונה:</b> ${f.diet || '-'}</div>
+          <div><b>סיווג:</b> ${f.taxonomyOrder || '-'} → ${f.taxonomyFamily || '-'}</div>
+          <div><b>מקורות:</b> ${f.sources.length}</div>
+        </div>
+      `;
+    }
+
+    function generateBlock() {
+      const f = getForm();
+      const sourceLines = f.sources.map((s,i)=>`            ${q(s)}${i < f.sources.length-1 ? ',' : ''}`).join('\n');
+      const block = `    {\n        id: ${Number(f.id) || 0},\n        name: ${q(f.name)},\n        scientificName: ${q(f.scientificName)},\n        image: ${q(f.image)},\n        etymology: ${q(f.etymology)},\n        discovererDetails: ${q(f.discovererDetails)},\n        discoveryLocation: ${q(f.discoveryLocation)},\n        discoveryCircumstances: ${q(f.discoveryCircumstances)},\n        childhood: ${q(f.childhood)},\n        behavior: ${q(f.behavior)},\n        achievements: ${q(f.achievements)},\n        size: ${q(f.size)},\n        weight: ${q(f.weight)},\n        lifespan: ${q(f.lifespan)},\n        origin: ${q(f.origin)},\n        discoverer: ${q(f.discoverer)},\n        year: ${q(f.year)},\n        eggs: ${q(f.eggs)},\n        conservation: ${q(f.conservation)},\n        diet: ${q(f.diet)},\n        hunting: ${q(f.hunting)},\n        reproduction: ${q(f.reproduction)},\n        taxonomy: {\n            order: ${q(f.taxonomyOrder)},\n            family: ${q(f.taxonomyFamily)},\n            hebrewFamily: ${q(f.taxonomyHebrewFamily)}\n        },\n        sources: [\n${sourceLines}\n        ]\n    },`;
+      $('output').textContent = `// הדבק בקובץ: ${categoryMap[$('targetCategory').value].file}\n\n` + block;
+    }
+
+    function saveLocal() {
+      const key = 'giantFreshwaterFishAdminDrafts';
+      const drafts = JSON.parse(localStorage.getItem(key) || '[]');
+      drafts.push({...getForm(), savedAt: new Date().toISOString(), targetCategory: $('targetCategory').value});
+      localStorage.setItem(key, JSON.stringify(drafts));
+      showStatus();
+    }
+
+    $('searchFish').addEventListener('input', renderFishList);
+    $('newFishBtn').addEventListener('click', () => setForm({ id: nextId(), conservation: 'NE' }));
+    $('generateBtn').addEventListener('click', generateBlock);
+    $('saveLocalBtn').addEventListener('click', saveLocal);
+    $('copyBtn').addEventListener('click', async () => { await navigator.clipboard.writeText($('output').textContent); showStatus(); });
+    document.querySelectorAll('.field').forEach(el => el.addEventListener('input', updatePreview));
+    document.querySelectorAll('.field').forEach(el => el.addEventListener('change', updatePreview));
+
+    renderFishList();
+    setForm({ id: nextId(), conservation: 'NE' });
+  </script>
+</body>
+</html>
