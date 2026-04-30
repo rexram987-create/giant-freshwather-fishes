@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מחולל דג חדש - ענקי המים</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800;900&display=swap');
+    body {
+      font-family: 'Assistant', sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0%, #020617 55%, #000 100%);
+      color: #f8fafc;
+      min-height: 100vh;
+    }
+    textarea, input, select {
+      direction: rtl;
+    }
+    pre {
+      direction: ltr;
+      text-align: left;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+  <main class="max-w-7xl mx-auto px-4 py-8 md:py-14">
+    <header class="text-center mb-10">
+      <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 font-bold text-sm mb-5">
+        כלי עזר למאגר ענקי המים
+      </div>
+      <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-l from-sky-300 to-blue-600 mb-4">
+        מחולל דג חדש
+      </h1>
+      <p class="text-slate-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+        מלא את הפרטים, והמערכת תיצור עבורך בלוק קוד מוכן להדבקה באחד מקבצי הנתונים של האתר.
+      </p>
+    </header>
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+      <form id="fishForm" class="bg-slate-900/80 border border-slate-700/80 rounded-3xl p-5 md:p-7 shadow-2xl space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="block text-sm font-bold text-slate-300 mb-2">מספר מזהה ID</span>
+            <input id="id" type="number" value="99" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" />
+          </label>
+          <label class="block">
+            <span class="block text-sm font-bold text-slate-300 mb-2">סטטוס שימור IUCN</span>
+            <select id="conservation" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400">
+              <option value="LC">LC - ללא חשש</option>
+              <option value="NT">NT - קרוב לסיכון</option>
+              <option value="VU">VU - פגיע</option>
+              <option value="EN">EN - בסכנת הכחדה</option>
+              <option value="CR">CR - בסכנת הכחדה קריטית</option>
+              <option value="DD">DD - חסר מידע</option>
+              <option value="NE">NE - לא הוערך</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="block text-sm font-bold text-slate-300 mb-2">שם בעברית</span>
+            <input id="name" placeholder="לדוגמה: אראפאימה ענקית" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" />
+          </label>
+          <label class="block">
+            <span class="block text-sm font-bold text-slate-300 mb-2">שם מדעי</span>
+            <input id="scientificName" placeholder="לדוגמה: Arapaima gigas" dir="ltr" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" />
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="block text-sm font-bold text-slate-300 mb-2">קישור לתמונה</span>
+          <input id="image" placeholder="https://..." dir="ltr" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" />
+        </label>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">גודל</span><input id="size" placeholder="2 מטרים" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">משקל</span><input id="weight" placeholder="100 קילוגרם" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">תוחלת חיים</span><input id="lifespan" placeholder="20 שנים" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">מוצא / תפוצה</span><input id="origin" placeholder="אגן האמזונס" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">חוקר שתיאר</span><input id="discoverer" placeholder="Carl Linnaeus" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">שנת תיאור</span><input id="year" placeholder="1758" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">ביצים / צאצאים</span><input id="eggs" placeholder="עשרות אלפים" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">תזונה</span><input id="diet" placeholder="דגים, סרטנים ורכיכות" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+        </div>
+
+        <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">אטימולוגיה - מקור השם</span><textarea id="etymology" rows="3" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea></label>
+        <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">ילדות ומחזור חיים</span><textarea id="childhood" rows="3" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea></label>
+        <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">התנהגות ואקולוגיה</span><textarea id="behavior" rows="3" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea></label>
+        <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">הישגים וייחודיות</span><textarea id="achievements" rows="3" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea></label>
+        <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">נסיבות גילוי / תיאור מדעי</span><textarea id="discoveryCircumstances" rows="3" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea></label>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">שיטת ציד</span><input id="hunting" placeholder="מארב / מרדף / סינון" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+          <label class="block"><span class="block text-sm font-bold text-slate-300 mb-2">רבייה</span><input id="reproduction" placeholder="הטלה / השרצה / נדידה" class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400" /></label>
+        </div>
+
+        <label class="block">
+          <span class="block text-sm font-bold text-slate-300 mb-2">מקורות מדעיים — שורה אחת לכל קישור</span>
+          <textarea id="sources" rows="4" dir="ltr" placeholder="https://www.fishbase.se/..." class="w-full rounded-2xl bg-slate-950 border border-slate-700 px-4 py-3 focus:outline-none focus:border-sky-400"></textarea>
+        </label>
+
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          <button type="button" id="generateBtn" class="flex-1 rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-black py-4 transition active:scale-[0.99]">צור בלוק דג</button>
+          <button type="reset" class="rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-bold px-8 py-4 transition">נקה טופס</button>
+        </div>
+      </form>
+
+      <aside class="space-y-5">
+        <div class="bg-slate-900/80 border border-slate-700/80 rounded-3xl p-5 md:p-7 shadow-2xl">
+          <h2 class="text-2xl font-black mb-3 text-sky-300">הקוד המוכן</h2>
+          <p class="text-slate-400 mb-4 leading-relaxed">אחרי יצירה, העתק את הקוד והדבק אותו בתוך מערך הדגים בקובץ הקטגוריה המתאים.</p>
+          <pre id="output" class="min-h-[420px] bg-black/60 border border-slate-800 rounded-2xl p-4 text-sm text-slate-200 overflow-auto">כאן יופיע הקוד...</pre>
+          <button id="copyBtn" class="mt-4 w-full rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 transition active:scale-[0.99]">העתק קוד</button>
+          <div id="copyStatus" class="text-center text-emerald-300 font-bold mt-3 hidden">הקוד הועתק!</div>
+        </div>
+
+        <div class="bg-sky-950/40 border border-sky-500/20 rounded-3xl p-5 md:p-7">
+          <h3 class="text-xl font-black text-sky-200 mb-3">איפה מדביקים?</h3>
+          <ul class="space-y-2 text-slate-300 leading-relaxed">
+            <li><b>האגם המפלצתי:</b> <code dir="ltr">data/pool_legends.js</code></li>
+            <li><b>מיכלי זכוכית:</b> <code dir="ltr">data/glass_tanks.js</code></li>
+            <li><b>מפלצות עולם:</b> <code dir="ltr">data/world_monsters.js</code></li>
+            <li><b>שורדים עתיקים:</b> <code dir="ltr">data/ancient_survivors.js</code></li>
+          </ul>
+          <p class="text-amber-200 mt-4 font-bold">חשוב: בין דג לדג חייב להיות פסיק.</p>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const fields = [
+      'id', 'name', 'scientificName', 'image', 'etymology', 'childhood', 'behavior', 'achievements',
+      'discoveryCircumstances', 'size', 'weight', 'lifespan', 'origin', 'discoverer', 'year', 'eggs',
+      'conservation', 'diet', 'hunting', 'reproduction'
+    ];
+
+    function escapeBackticks(value) {
+      return String(value || '').replace(/`/g, '\\`').trim();
+    }
+
+    function line(key, value, comma = true) {
+      const safe = escapeBackticks(value);
+      return `        ${key}: \`${safe}\`${comma ? ',' : ''}`;
+    }
+
+    function generateFishBlock() {
+      const data = {};
+      fields.forEach(id => data[id] = document.getElementById(id).value);
+      const sourcesRaw = document.getElementById('sources').value;
+      const sources = sourcesRaw.split('\n').map(s => s.trim()).filter(Boolean);
+      const sourceLines = sources.length
+        ? sources.map((s, index) => `            \`${escapeBackticks(s)}\`${index < sources.length - 1 ? ',' : ''}`).join('\n')
+        : '';
+
+      const block = `    {\n        id: ${Number(data.id) || 0},\n${line('name', data.name)}\n${line('scientificName', data.scientificName)}\n${line('image', data.image)}\n${line('etymology', data.etymology)}\n${line('childhood', data.childhood)}\n${line('behavior', data.behavior)}\n${line('achievements', data.achievements)}\n${line('discoveryCircumstances', data.discoveryCircumstances)}\n${line('size', data.size)}\n${line('weight', data.weight)}\n${line('lifespan', data.lifespan)}\n${line('origin', data.origin)}\n${line('discoverer', data.discoverer)}\n${line('year', data.year)}\n${line('eggs', data.eggs)}\n${line('conservation', data.conservation)}\n${line('diet', data.diet)}\n${line('hunting', data.hunting)}\n${line('reproduction', data.reproduction)}\n        sources: [\n${sourceLines}\n        ]\n    },`;
+
+      document.getElementById('output').textContent = block;
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', generateFishBlock);
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      const text = document.getElementById('output').textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        const status = document.getElementById('copyStatus');
+        status.classList.remove('hidden');
+        setTimeout(() => status.classList.add('hidden'), 1800);
+      } catch (err) {
+        alert('לא הצלחתי להעתיק אוטומטית. אפשר לסמן ולהעתיק ידנית.');
+      }
+    });
+  </script>
+</body>
+</html>
